@@ -1,11 +1,11 @@
-/* MODEL 1 · اتاق فرمان نقشه — full-bleed zoomable map, context panel follows the level you are on. */
+/* MODEL A · نقشه — one stage, two views (2D drill-down / tilted 3D with time); the side panel follows the level or the clicked item. */
 (function () {
   'use strict';
   const B = window.BZ, U = window.UI, { fa, pct, ic, esc } = U;
   const LV = ['کشور', 'استان', 'شهر', 'منطقه', 'محله'];
   const CHILD = { 0: 'استان', 1: 'شهر', 2: 'منطقه', 3: 'محله', 4: 'معبر یا عارضه' };
-  let map, st, layers = {}, sat, labelsLayer, shapes;
-  const LAYERS = [['props', 'املاک و اراضی', '#1E40AF'], ['streets', 'معابر', '#64748B'], ['feats', 'عوارض مکانی', '#7FD3D1'], ['exec', 'پروژه‌های اجرایی', '#00ADAB'], ['partner', 'پروژه‌های مشارکتی', '#C2410C']];
+  let map, st, layers = {}, sat, labelsLayer, shapes, sel = null, view = '2d', month = 7, playing = null, cur3 = null, selLayer = null;
+  const C = U.CAT; const LAYERS = [['props', 'املاک و اراضی', C.prop], ['streets', 'معابر', C.street], ['feats', 'عوارض مکانی', C.feat], ['exec', 'پروژه‌های اجرایی', C.exec], ['partner', 'پروژه‌های مشارکتی', C.part]];
   const on = { props: true, streets: true, feats: true, exec: true, partner: true };
   const METRICS = [['records', 'تعداد ثبت'], ['completeness', 'کامل‌بودن'], ['pending', 'منتظر تأیید']];
   let metric = 'records';
@@ -15,10 +15,11 @@
   const boundsOf = pts => L.latLngBounds(pts.map(ll));
 
   function render() {
-    U.topbar('اتاق فرمان', 'همه‌ی کشور روی یک نقشه · از استان تا معبر');
-    U.$('#page').innerHTML = `<div class="m1">
+    U.topbar('نقشه‌ی بازآفرینی', 'کل کشور روی یک نقشه · دوبعدی برای کاوش تا معبر، سه‌بعدی برای دیدن حجم و روند');
+    U.$('#page').innerHTML = `<div class="ma" id="ma">
       <section class="stage" aria-label="نقشه">
         <div id="map1"></div>
+        <div class="iso3" id="iso3"><svg id="iso" class="iso" preserveAspectRatio="xMidYMid meet"></svg></div>
         <aside class="float ctx" id="ctx" aria-live="polite"></aside>
         <button class="float layersBtn" id="layersBtn" aria-expanded="false">${ic('layers', 'sm')} لایه‌ها و رنگ نقشه</button>
         <div class="float tools" id="tools" role="group" aria-label="لایه‌ها" hidden>
@@ -31,29 +32,23 @@
         <div class="float zoom"><button id="zin" aria-label="بزرگ‌نمایی">${ic('plus', 'sm')}</button><button id="zout" aria-label="کوچک‌نمایی">${ic('minus', 'sm')}</button><button id="zhome" aria-label="کل کشور">${ic('home', 'sm')}</button></div>
         <div class="float legend" id="legend"></div>
         <div class="hint" id="hint">روی هر استان بزنید تا تا سطح محله و معبر پایین بروید</div>
-        <div class="float ticker"><div class="lbl"><b>آخرین کارها</b><small id="tickScope">کل کشور</small></div><div class="rail" id="rail"></div></div>
+        <div class="float time3" id="time3"><button class="play" id="play" aria-label="پخش روند">${ic('play', 'sm')}</button><div class="months" id="months"></div><div style="min-width:96px"><small class="muted">تا پایان</small><div style="font-weight:800" id="mlabel"></div></div></div>
+        <div class="float viewsw" role="tablist" aria-label="نوع نمایش"><button role="tab" data-v="2d" class="on">${ic('map', 'sm')} دوبعدی</button><button role="tab" data-v="3d">${ic('chart', 'sm')} سه‌بعدی و زمان</button></div>
       </section>
 
-      <div class="sec-title" style="margin-top:28px"><span class="n">۲</span><h2>کارشناسان چه کرده‌اند؟</h2><p>ثبت‌ها، کیفیت و کارهای منتظر هر کارشناس</p></div>
-      <div class="grid g-21">
-        <div class="card pad" style="overflow:auto"><div class="h2"><h2>عملکرد کارشناسان</h2><div class="grow"></div><div class="seg" id="xsort"><button class="on" data-s="recs30">بیشترین ثبت</button><button data-s="lastDays">کم‌فعال‌ها</button><button data-s="pending">منتظر تأیید</button></div></div>
-          <div id="xtable"></div></div>
-        <div class="card pad"><div class="h2"><h2>منتظر تأیید شما</h2><div class="grow"></div><span class="badge wait">${fa(B.queue.length)} مورد</span></div>
-          <p class="lede">موارد قدیمی‌تر بالاتر آمده‌اند.</p>
-          <div class="list">${B.queue.map(q => `<a class="row" href="#d/hood/${q.ref}">${U.av(q.x)}<span class="t"><b>${q.n}</b><small>${q.x.n} · ${q.city}</small></span><span style="width:70px">${U.steps(q.steps)}<small class="muted">${fa(q.age)} روز</small></span></a>`).join('')}</div></div>
-      </div>
+      <div class="sec-title" style="margin-top:28px"><span class="n">۲</span><h2>کارشناسان چه کرده‌اند؟</h2><p>بازه‌ی یک ماه اخیر</p></div>
+      <div class="grid g-21">${U.expertsCard(6)}${U.rhythmCard()}</div>
 
-      <div class="sec-title" style="margin-top:28px"><span class="n">۳</span><h2>پروژه‌ها و روند ثبت</h2><p>پیشرفت واقعی در برابر برنامه، و حجم ثبت ماهانه</p></div>
+      <div class="sec-title" style="margin-top:28px"><span class="n">۳</span><h2>پروژه‌ها و کارهای منتظر شما</h2><p>پیشرفت واقعی در برابر برنامه، و صف تأیید</p></div>
       <div class="grid g2">
-        <div class="card pad"><div class="h2"><h2>پیشرفت پروژه‌ها</h2><div class="grow"></div><span class="muted" style="font-size:12px">خط سیاه = جایی که باید باشد</span></div>${U.bullets(B.projects.slice(0, 7))}</div>
-        <div class="card pad"><div class="h2"><h2>ثبت ماهانه به تفکیک نوع</h2><div class="grow"></div><span class="delta ${B.totals.thisMonth < B.totals.lastMonth ? 'down' : ''}">${U.spct((B.totals.thisMonth / B.totals.lastMonth - 1) * 100)} نسبت به مهر</span></div>${U.TREND_LEGEND()}<div class="chart" id="trend1" style="height:310px"></div></div>
+        <div class="card pad"><div class="h2"><h2>پیشرفت پروژه‌ها</h2><div class="grow"></div><span class="muted" style="font-size:12px">خط سیاه = جایی که باید باشد</span></div>${U.bullets(B.projects.slice(0, 6))}</div>
+        <div class="card pad"><div class="h2"><h2>منتظر تأیید شما</h2><div class="grow"></div><span class="badge wait">${fa(B.queue.length)} مورد</span></div>
+          <div class="list">${B.queue.slice(0, 6).map(q => `<a class="row" href="#d/hood/${q.ref}">${U.av(q.x)}<span class="t"><b>${q.n}</b><small>${q.x.n} · ${q.city}</small></span><span style="width:84px">${U.steps(q.steps)}<small class="muted">${fa(q.age)} روز در صف</small></span></a>`).join('')}</div></div>
       </div>
       <div style="margin-top:20px">${U.aiCard()}</div>
     </div>`;
-
-    U.$('#xtable').innerHTML = U.expertTable([...B.experts].sort((a, b) => b.recs30 - a.recs30).slice(0, 8));
-    U.$$('#xsort button').forEach(b => b.onclick = () => { U.$$('#xsort button').forEach(x => x.classList.toggle('on', x === b)); const k = b.dataset.s; U.$('#xtable').innerHTML = U.expertTable([...B.experts].sort((a, c) => c[k] - a[k]).slice(0, 8)); });
-    U.trendChart(U.$('#trend1'));
+    U.$$('.viewsw button').forEach(b => b.onclick = () => setView(b.dataset.v));
+    U.$('#play').onclick = togglePlay;
     initMap();
   }
 
@@ -68,21 +63,22 @@
     U.$$('#metric button').forEach(b => b.onclick = () => { metric = b.dataset.k; U.$$('#metric button').forEach(x => x.classList.toggle('on', x === b)); go(st); });
     U.$$('.layer[data-l]').forEach(b => b.onclick = () => { const k = b.dataset.l; on[k] = !on[k]; b.classList.toggle('off', !on[k]); b.setAttribute('aria-pressed', on[k]); go(st, true); });
     U.$('#satBtn').onclick = e => { const b = e.currentTarget, onSat = b.classList.toggle('off'); b.setAttribute('aria-pressed', !onSat); if (!onSat) sat.addTo(map).bringToBack(); else map.removeLayer(sat); };
-    go({ lv: 0 });
+    let gp = null; try { gp = sessionStorage.getItem('goProv'); sessionStorage.removeItem('goProv'); } catch (e) {}
+    go(gp && B.provBy[gp] ? { lv: 1, id: gp } : { lv: 0 });
   }
 
   const provColor = p => { if (!p.has) return null; const vals = B.provs.filter(x => x.has).map(x => x[metric]); const mx = Math.max(...vals); return U.ramp(p[metric] / (mx || 1) * 0.999); };
   function label(latlng, name, val) { L.marker(latlng, { interactive: false, icon: L.divIcon({ className: 'm1-lab', html: `<span>${esc(name)}</span>${val != null ? `<span class="c">${val}</span>` : ''}`, iconSize: [90, 32], iconAnchor: [45, 16] }) }).addTo(labelsLayer); }
 
   function go(s, keepView) {
-    st = s; shapes.clearLayers(); labelsLayer.clearLayers(); U.tip(null);
+    st = s; sel = null; selLayer = null; shapes.clearLayers(); labelsLayer.clearLayers(); U.tip(null);
     const hint = U.$('#hint'); if (hint) hint.style.display = s.lv === 0 ? '' : 'none';
     if (s.lv === 0) drawCountry(keepView);
     else if (s.lv === 1) drawProv(s.id, keepView);
     else if (s.lv === 2) drawCity(s.id, keepView);
     else if (s.lv === 3) drawRegion(s.id, keepView);
     else drawHood(s.id, keepView);
-    panel(); legend(); ticker();
+    panel(); legend(); if (view === '3d') draw3d();
   }
 
   function drawCountry(keep) {
@@ -101,44 +97,53 @@
   }
   function drawProv(id, keep) {
     const p = B.provBy[id]; fadeOthers(id);
-    const outline = L.geoJSON(p.feature, { style: { color: '#007C7A', weight: 2, fill: false }, interactive: false }).addTo(shapes);
+    const outline = L.geoJSON(p.feature, { style: { color: '#0F172A', weight: 2, fill: false }, interactive: false }).addTo(shapes);
     const cities = B.D.cities.filter(c => c.p === id);
     const mx = Math.max(1, ...cities.map(c => c.hoods));
     cities.forEach(c => {
       const pg = L.polygon(c.b.map(ll), { color: '#fff', weight: 1.2, fillColor: U.ramp(c.hoods / mx * .99), fillOpacity: .95 }).addTo(shapes);
       pg.on('mousemove', e => U.tip(e.originalEvent, `<b>شهر ${c.n}</b><br>${fa(c.regions)} منطقه · ${fa(c.hoods)} محله · ${fa(c.props)} ملک`)); pg.on('mouseout', () => U.tip(null));
       pg.on('click', () => go({ lv: 2, id: c.id }));
-      L.circleMarker(ll(c.c), { radius: 6 + Math.sqrt(c.hoods) * 3.2, color: '#fff', weight: 2, fillColor: '#007C7A', fillOpacity: .9 }).on('click', () => go({ lv: 2, id: c.id })).on('mousemove', e => U.tip(e.originalEvent, `<b>شهر ${c.n}</b><br>${fa(c.regions)} منطقه · ${fa(c.hoods)} محله · ${fa(c.props)} ملک`)).on('mouseout', () => U.tip(null)).addTo(shapes);
+      L.circleMarker(ll(c.c), { radius: 6 + Math.sqrt(c.hoods) * 3.2, color: '#fff', weight: 2, fillColor: C.hood, fillOpacity: .9 }).on('click', () => go({ lv: 2, id: c.id })).on('mousemove', e => U.tip(e.originalEvent, `<b>شهر ${c.n}</b><br>${fa(c.regions)} منطقه · ${fa(c.hoods)} محله · ${fa(c.props)} ملک`)).on('mouseout', () => U.tip(null)).addTo(shapes);
       label(ll(c.c), c.n, fa(c.hoods) + ' محله');
     });
     if (!keep) map.fitBounds(outline.getBounds(), PAD());
   }
   function drawPoints(hoodIds) {
     const hs = new Set(hoodIds);
-    if (on.streets) B.D.streets.filter(s => hs.has(s.h)).forEach(s => L.polyline(s.l.map(ll), { color: s.m ? '#334155' : '#94A3B8', weight: s.m ? 4 : 2.5, opacity: .9 }).on('mousemove', e => U.tip(e.originalEvent, `<b>${s.n}</b><br>${s.s}`)).on('mouseout', () => U.tip(null)).on('click', () => location.hash = '#d/hood/' + s.h).addTo(shapes));
-    if (on.feats) B.D.feats.filter(f => hs.has(f.h)).forEach(f => L.polygon(f.b.map(ll), { color: '#40BDBB', weight: 1, fillColor: '#B3E6E5', fillOpacity: .8 }).on('mousemove', e => U.tip(e.originalEvent, `<b>${f.n}</b><br>عارضه مکانی · ${f.t}`)).on('mouseout', () => U.tip(null)).addTo(shapes));
-    if (on.exec) B.D.execs.filter(x => hs.has(x.h)).forEach(x => L.polygon(x.b.map(ll), { color: '#007C7A', weight: 2, dashArray: '5 4', fillColor: '#00ADAB', fillOpacity: .12 }).on('click', () => location.hash = '#d/project/' + x.id).on('mousemove', e => U.tip(e.originalEvent, `<b>${x.n}</b><br>پروژه اجرایی · ${pct(x.pr)} پیشرفت`)).on('mouseout', () => U.tip(null)).addTo(shapes));
-    if (on.props) B.D.pts.filter(p => hs.has(p.h)).forEach(p => L.circleMarker(ll(p.c), { radius: 4, color: '#fff', weight: 1.2, fillColor: '#1E40AF', fillOpacity: 1 }).on('mousemove', e => U.tip(e.originalEvent, `<b>ملک ${p.code}</b><br>${p.t} · ${fa(p.area)} مترمربع<br>${p.s}`)).on('mouseout', () => U.tip(null)).addTo(shapes));
-    if (on.partner) B.D.partners.filter(x => hs.has(x.h)).forEach(x => L.circleMarker(ll(x.c), { radius: 8, color: '#fff', weight: 2, fillColor: '#C2410C', fillOpacity: 1 }).on('click', () => location.hash = '#d/project/' + x.id).on('mousemove', e => U.tip(e.originalEvent, `<b>${x.n}</b><br>پروژه مشارکتی · ${pct(x.pr)} پیشرفت`)).on('mouseout', () => U.tip(null)).addTo(shapes));
+    const hov = (l, html) => l.on('mousemove', e => U.tip(e.originalEvent, html)).on('mouseout', () => U.tip(null));
+    if (on.streets) B.D.streets.filter(s => hs.has(s.h)).forEach(s => { const l = L.polyline(s.l.map(ll), { color: C.street, weight: s.m ? 5 : 3, opacity: .95 }); hov(l, `<b>${s.n}</b><br>${s.s}`).on('click', e => pick('street', s, e)).addTo(shapes); });
+    if (on.feats) B.D.feats.filter(f => hs.has(f.h)).forEach(f => { const l = L.polygon(f.b.map(ll), { color: C.feat, weight: 1.5, fillColor: C.feat, fillOpacity: .25 }); hov(l, `<b>${f.n}</b><br>عارضه مکانی · ${f.t}`).on('click', e => pick('feat', f, e)).addTo(shapes); });
+    if (on.exec) B.D.execs.filter(x => hs.has(x.h)).forEach(x => { const l = L.polygon(x.b.map(ll), { color: C.exec, weight: 2, dashArray: '5 4', fillColor: C.exec, fillOpacity: .08 }); hov(l, `<b>${x.n}</b><br>پروژه اجرایی · ${pct(x.pr)} پیشرفت`).on('click', e => pick('proj', x, e)).addTo(shapes); });
+    if (on.props) B.D.pts.filter(p => hs.has(p.h)).forEach(p => { const l = L.circleMarker(ll(p.c), { radius: 5, color: '#fff', weight: 1.5, fillColor: C.prop, fillOpacity: 1 }); hov(l, `<b>ملک ${p.code}</b><br>${p.t} · ${fa(p.area)} مترمربع`).on('click', e => pick('prop', p, e)).addTo(shapes); });
+    if (on.partner) B.D.partners.filter(x => hs.has(x.h)).forEach(x => { const l = L.circleMarker(ll(x.c), { radius: 8, color: '#fff', weight: 2, fillColor: C.part, fillOpacity: 1 }); hov(l, `<b>${x.n}</b><br>پروژه مشارکتی · ${pct(x.pr)} پیشرفت`).on('click', e => pick('proj', x, e)).addTo(shapes); });
+  }
+  function pick(kind, it, e) {
+    if (e) L.DomEvent.stopPropagation(e);
+    sel = { kind, it }; U.tip(null);
+    if (selLayer) { shapes.removeLayer(selLayer); selLayer = null; }
+    const pos = it.c ? ll(it.c) : it.l ? ll(it.l[Math.floor(it.l.length / 2)]) : L.polygon(it.b.map(ll)).getBounds().getCenter();
+    selLayer = L.circleMarker(pos, { radius: 14, color: '#0F172A', weight: 2, fill: false, interactive: false }).addTo(shapes);
+    panel();
   }
   function drawCity(id, keep) {
     const c = B.cityBy[id]; fadeOthers('_');
-    const outline = L.polygon(c.b.map(ll), { color: '#007C7A', weight: 2, fillColor: '#fff', fillOpacity: 1 }).addTo(shapes);
+    const outline = L.polygon(c.b.map(ll), { color: '#0F172A', weight: 2, fillColor: '#fff', fillOpacity: 1 }).addTo(shapes);
     const regs = B.D.regions.filter(r => r.city === id);
     regs.forEach(r => { const hs = B.D.hoods.filter(h => h.reg === r.id); const pg = L.polygon(r.b.map(ll), { color: '#94A3B8', weight: 1, fillColor: hs.length ? U.ramp(Math.min(.99, hs.length / 5)) : '#F8FAFC', fillOpacity: .55 }).addTo(shapes);
       pg.on('click', () => go({ lv: 3, id: r.id })); pg.on('mousemove', e => U.tip(e.originalEvent, `<b>${r.n}</b><br>${fa(hs.length)} محله ثبت‌شده`)); pg.on('mouseout', () => U.tip(null));
       label(ll(r.c), r.n, null); });
     const hoods = B.D.hoods.filter(h => h.city === id);
-    hoods.forEach(h => L.polygon(h.b.map(ll), { color: '#007C7A', weight: 1, fillOpacity: 0, dashArray: '3 3' }).on('click', () => go({ lv: 4, id: h.id })).addTo(shapes));
+    hoods.forEach(h => L.polygon(h.b.map(ll), { color: '#0F172A', weight: 1, fillOpacity: 0, dashArray: '3 3' }).on('click', () => go({ lv: 4, id: h.id })).addTo(shapes));
     drawPoints(hoods.map(h => h.id));
     if (!keep) map.fitBounds(outline.getBounds(), PAD());
   }
   function drawRegion(id, keep) {
     const r = B.regionBy[id], c = B.cityBy[r.city]; fadeOthers('_');
     L.polygon(c.b.map(ll), { color: '#CBD5E1', weight: 1, fillColor: '#fff', fillOpacity: 1, interactive: false }).addTo(shapes);
-    const outline = L.polygon(r.b.map(ll), { color: '#007C7A', weight: 2, fillColor: '#F8FAFC', fillOpacity: 1 }).addTo(shapes);
+    const outline = L.polygon(r.b.map(ll), { color: '#0F172A', weight: 2, fillColor: '#F8FAFC', fillOpacity: 1 }).addTo(shapes);
     const hoods = B.D.hoods.filter(h => h.reg === id);
-    hoods.forEach(h => { const col = h.status === 'تأیید شده' ? '#40BDBB' : h.status === 'در انتظار تأیید' ? '#93A8E8' : h.status === 'برگشت برای اصلاح' ? '#FED7AA' : '#E2E8F0';
+    hoods.forEach(h => { const col = h.status === 'تأیید شده' ? C.hood : h.status === 'در انتظار تأیید' ? '#91A7FF' : h.status === 'برگشت برای اصلاح' ? '#FFC9C9' : '#E2E8F0';
       const pg = L.polygon(h.b.map(ll), { color: '#fff', weight: 1.5, fillColor: col, fillOpacity: .85 }).addTo(shapes);
       pg.on('click', () => go({ lv: 4, id: h.id })); pg.on('mousemove', e => U.tip(e.originalEvent, `<b>محله ${h.n}</b><br>${h.status} · مرحله ${fa(h.steps)} از ۶`)); pg.on('mouseout', () => U.tip(null));
       label(ll(h.c), h.n, null); });
@@ -149,7 +154,7 @@
     const h = B.hoodBy[id]; fadeOthers('_');
     const sib = B.D.hoods.filter(x => x.reg === h.reg && x.id !== id);
     sib.forEach(x => L.polygon(x.b.map(ll), { color: '#CBD5E1', weight: 1, fillColor: '#F8FAFC', fillOpacity: 1 }).on('click', () => go({ lv: 4, id: x.id })).addTo(shapes));
-    const outline = L.polygon(h.b.map(ll), { color: '#007C7A', weight: 2.5, fillColor: '#E6F7F7', fillOpacity: .6 }).addTo(shapes);
+    const outline = L.polygon(h.b.map(ll), { color: '#0F172A', weight: 2.5, fillColor: '#F1F5F9', fillOpacity: .7 }).addTo(shapes);
     drawPoints([id]);
     if (!keep) map.fitBounds(outline.getBounds(), PAD(16));
   }
@@ -165,6 +170,7 @@
     return out;
   }
   function panel() {
+    if (sel) return itemPanel();
     const ch = chain(), cur = ch[ch.length - 1], T = B.totals;
     let title = cur.n, lv = LV[st.lv], cells = [], comp = 0, kids = [], prov = null, detail = '', extra = '';
     if (st.lv === 0) {
@@ -187,7 +193,7 @@
       cells = [['محله', hs.length], ['معبر', hs.reduce((a, h) => a + h.streets, 0)], ['ملک', hs.reduce((a, h) => a + h.props, 0)], ['عارضه', hs.reduce((a, h) => a + h.feats, 0)], ['تأیید شده', hs.filter(h => h.status === 'تأیید شده').length], ['منتظر', hs.filter(h => h.status === 'در انتظار تأیید').length]];
       comp = hs.length ? hs.reduce((a, h) => a + h.steps, 0) / hs.length / 6 * 100 : 0;
       kids = hs.map(h => ({ n: 'محله ' + h.n, s: h.status, v: h.steps, vs: fa(h.steps) + '/۶', go: () => go({ lv: 4, id: h.id }) }));
-      extra = `<div style="display:flex;gap:10px;flex-wrap:wrap;font-size:11.5px" class="muted">${[['#40BDBB', 'تأیید شده'], ['#93A8E8', 'منتظر تأیید'], ['#FED7AA', 'برگشت‌خورده'], ['#E2E8F0', 'پیش‌نویس']].map(([c, t]) => `<span><i style="display:inline-block;width:9px;height:9px;border-radius:3px;background:${c};margin-inline-end:4px"></i>${t}</span>`).join('')}</div>`;
+      extra = `<div style="display:flex;gap:10px;flex-wrap:wrap;font-size:11.5px" class="muted">${[[C.hood, 'تأیید شده'], ['#91A7FF', 'منتظر تأیید'], ['#FFC9C9', 'برگشت‌خورده'], ['#E2E8F0', 'پیش‌نویس']].map(([c, t]) => `<span><i style="display:inline-block;width:9px;height:9px;border-radius:3px;background:${c};margin-inline-end:4px"></i>${t}</span>`).join('')}</div>`;
     } else {
       const h = B.hoodBy[st.id]; title = 'محله ' + h.n; prov = B.provBy[B.cityBy[h.city].p];
       cells = [['معبر', h.streets], ['ملک', h.props], ['عارضه', h.feats], ['ساکنان', h.pop], ['بلوک', h.blk || 0], ['پروژه', B.projects.filter(p => p.h === h.id).length]];
@@ -211,19 +217,113 @@
     U.$$('#ctx .crumb button').forEach(b => b.onclick = () => go(ch[+b.dataset.i]));
     U.$$('#ctx [data-k]').forEach(b => b.onclick = () => kids[+b.dataset.k].go());
   }
+  function itemPanel() {
+    const ch = chain();
+    U.$('#ctx').innerHTML = `<div class="hd"><button class="backlink" id="selBack">${ic('back', 'sm')} بازگشت به ${ch[ch.length - 1].n}</button><nav class="crumb" aria-label="مسیر">${ch.map(c => `<span>${c.n}</span>`).join('<span>›</span>')}</nav></div><div class="bd">${U.itemPanel(sel.kind, sel.it)}</div>`;
+    U.$('#selBack').onclick = () => { sel = null; if (selLayer) { shapes.removeLayer(selLayer); selLayer = null; } panel(); };
+  }
   function legend() {
     const el = U.$('#legend');
     if (st.lv === 0) { const vals = B.provs.filter(x => x.has).map(x => x[metric]); const mx = Math.max(...vals), mn = Math.min(...vals);
       el.innerHTML = `<b style="color:var(--ink)">${METRICS.find(m => m[0] === metric)[1]}</b><div class="ramp">${U.RAMP.map(c => `<i style="background:${c}"></i>`).join('')}</div><div style="display:flex;justify-content:space-between"><span>${metric === 'completeness' ? pct(mn) : fa(mn)}</span><span>${metric === 'completeness' ? pct(mx) : fa(mx)}</span></div><div style="display:flex;align-items:center;gap:6px;margin-top:6px"><i style="width:12px;height:12px;border-radius:3px;background:#E2E8F0"></i> بدون داده (${fa(B.empty.length)} استان)</div>`; }
     else el.innerHTML = `<b style="color:var(--ink)">${st.lv === 1 ? 'رنگ شهرها: تعداد محله' : st.lv === 2 ? 'رنگ مناطق: تعداد محله' : 'لایه‌های روشن روی نقشه'}</b><div style="display:flex;flex-direction:column;gap:3px;margin-top:6px">${LAYERS.filter(l => on[l[0]]).map(l => `<span><i style="display:inline-block;width:9px;height:9px;border-radius:50%;background:${l[2]};margin-inline-end:6px"></i>${l[1]}</span>`).join('')}</div>`;
   }
-  function ticker() {
-    const ch = chain(); let evs = B.events;
-    if (st.lv >= 1) { const prov = ch[1].id; evs = evs.filter(e => e.prov === prov); }
-    if (st.lv >= 2) { const city = ch[2].id; evs = evs.filter(e => e.city === city); }
-    if (st.lv === 4) evs = evs.filter(e => e.hood === st.id).concat(evs.filter(e => e.hood !== st.id));
-    U.$('#tickScope').textContent = ch[ch.length - 1].n;
-    U.$('#rail').innerHTML = evs.slice(0, 14).map(U.evChip).join('') || '<span class="muted" style="padding:0 10px">در این محدوده هنوز فعالیتی ثبت نشده</span>';
+  /* ---------- view switch ---------- */
+  function setView(v) {
+    view = v; U.$('#ma').classList.toggle('is3d', v === '3d');
+    U.$$('.viewsw button').forEach(b => { b.classList.toggle('on', b.dataset.v === v); b.setAttribute('aria-selected', b.dataset.v === v); });
+    U.$('#hint').style.display = v === '3d' ? 'none' : (st.lv === 0 ? '' : 'none');
+    if (v === '3d') draw3d(); else { stop(); setTimeout(() => map.invalidateSize(), 50); }
   }
-  window.M1 = { render, destroy: () => { if (map) { map.remove(); map = null; } } };
+
+  /* ---------- 3D (tilted extrusion) ---------- */
+  const path = pts => 'M' + pts.map(p => p[0].toFixed(1) + ',' + p[1].toFixed(1)).join('L') + 'Z';
+  function projector(rings, box) {
+    let lat0 = 0, n = 0; rings.forEach(r => r.forEach(p => { lat0 += p[1]; n++; })); lat0 /= n;
+    const k = Math.cos(lat0 * Math.PI / 180);
+    const pl = ([lon, lat]) => [lon * k, -lat];
+    const t = ([x, y]) => [x + y * 0.42, y * 0.56];
+    const pts = rings.flat().map(p => t(pl(p)));
+    const bb = U.bboxOf(pts); const s = Math.min((box[2] - box[0]) / (bb[2] - bb[0]), (box[3] - box[1]) / (bb[3] - bb[1]));
+    const ox = box[0] + ((box[2] - box[0]) - (bb[2] - bb[0]) * s) / 2, oy = box[1] + ((box[3] - box[1]) - (bb[3] - bb[1]) * s) / 2;
+    const P = p => { const q = t(pl(p)); return [ox + (q[0] - bb[0]) * s, oy + (q[1] - bb[1]) * s]; };
+    P.pl = pl; P.bb = bb; P.fromPlane = q0 => { const q = t(q0); return [ox + (q[0] - bb[0]) * s, oy + (q[1] - bb[1]) * s]; };
+    return P;
+  }
+  function level3() {
+    if (st.lv === 0) return { k: 'country' };
+    if (st.lv === 1) return { k: 'prov', id: st.id };
+    const ch = chain(); return { k: 'city', id: ch[2].id, hood: st.lv === 4 ? st.id : null };
+  }
+  function blocks3(lv) {
+    const flip = b => b.map(([a, c]) => [c, a]);
+    if (lv.k === 'country') return B.provs.map(p => ({ id: p.id, n: p.short, full: p.fa, rings: U.ringsOf(p.feature), has: p.has, series: p.cum, go: () => go({ lv: 1, id: p.id }) }));
+    if (lv.k === 'prov') { const pv = B.provBy[lv.id]; const cs = B.D.cities.filter(c => c.p === lv.id); const tot = cs.reduce((a, c) => a + c.hoods + c.props, 0) || 1;
+      return [{ id: '_base', rings: U.ringsOf(pv.feature), base: true, has: true }].concat(cs.map(c => ({ id: c.id, n: c.n, full: 'شهر ' + c.n, rings: [flip(c.b)], has: true, series: pv.cum.map(v => Math.round(v * (c.hoods + c.props) / tot)), go: () => go({ lv: 2, id: c.id }) }))); }
+    const c = B.cityBy[lv.id]; const pv = B.provBy[c.p]; const hs = B.D.hoods.filter(h => h.city === c.id); const tot = hs.reduce((a, h) => a + h.props + h.streets + 1, 0) || 1;
+    return [{ id: '_base', rings: [flip(c.b)], base: true, has: true }].concat(hs.map(h => ({ id: h.id, n: h.n, full: 'محله ' + h.n, rings: [flip(h.b)], has: true, series: pv.cum.map(v => Math.round(v * (h.props + h.streets + 1) / tot)), go: () => go({ lv: 4, id: h.id }) })));
+  }
+  function draw3d() {
+    const svg = U.$('#iso'); const r = U.$('#iso3').getBoundingClientRect(); const W = Math.max(600, r.width), H = Math.max(480, r.height);
+    svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+    const narrow = innerWidth < 760;
+    const lv = level3(); const bl = blocks3(lv);
+    const box = narrow ? [12, 40, W - 12, H - 40] : [36, 90, W - 420, H - 150];
+    const P = projector(bl.map(b => b.rings).flat(), box);
+    const th = lv.k === 'country' ? 12 : 8;
+    const mx = Math.max(1, ...bl.filter(b => b.series).map(b => b.series[7]));
+    let Hmax = (box[3] - box[1]) * (lv.k === 'country' ? .5 : .42);
+    let sides = '', tops = '', labels = ''; const prisms = [];
+    bl.forEach(b => {
+      const proj = b.rings.map(rr => rr.map(P));
+      const fillTop = b.base ? '#FFFFFF' : !b.has ? 'url(#h3)' : lv.k === 'country' ? '#FFFFFF' : '#F1F5F9';
+      const t2 = b.base ? th + 6 : lv.k === 'country' ? th : 4;
+      sides += proj.map(rr => `<path d="${path(rr.map(([x, y]) => [x, y + t2]))}" fill="${b.base ? '#CBD5E1' : '#DEE4EA'}"/>`).join('');
+      tops += `<g class="${b.base ? '' : 'prov'}" data-id="${b.id}">${proj.map(rr => `<path d="${path(rr)}" fill="${fillTop}" stroke="${b.base ? '#94A3B8' : '#CBD5E1'}" stroke-width="${b.base ? 1.2 : .8}"/>`).join('')}</g>`;
+      if (b.base || !b.series) return;
+      const big = [...b.rings].sort((a, c) => c.length - a.length)[0]; const cc = U.centroid(big);
+      const w = lv.k === 'country' ? 0.3 : (P.bb[2] - P.bb[0]) / 70;
+      const lp = P(cc); prisms.push({ b, pc: P.pl(cc), w, sy: lp[1] });
+      if (b.has) labels += `<text class="lab" x="${lp[0]}" y="${lp[1] + 16}" text-anchor="middle">${esc(b.n)}</text>`;
+    });
+    prisms.sort((a, c) => a.sy - c.sy);
+    prisms.forEach(p => { const v = p.b.series[7] / mx; if (v > 0) Hmax = Math.min(Hmax, (p.sy - 44) / v); });
+    cur3 = { P, prisms, mx, Hmax, bl, lv };
+    svg.innerHTML = `<defs><pattern id="h3" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#F8FAFC"/><line x1="0" y1="0" x2="0" y2="6" stroke="#E2E8F0" stroke-width="2"/></pattern></defs><g>${sides}</g><g>${tops}</g><g>${labels}</g><g id="prisms"></g>`;
+    U.$$('#iso .prov').forEach(g => { const b = bl.find(x => x.id === g.dataset.id); if (!b) return;
+      g.onmousemove = e => U.tip(e, `<b>${b.full}</b><br>${b.has ? fa(b.series[month]) + ' رکورد تا پایان ' + B.MONTHS[month] : 'هنوز داده‌ای ثبت نشده'}`); g.onmouseleave = () => U.tip(null);
+      g.onclick = () => { U.tip(null); if (b.has) b.go(); }; });
+    paint(month, true); months();
+  }
+  function prismSvg(pr, h) {
+    const { P } = cur3; const [x, y] = pr.pc, w = pr.w;
+    const A = P.fromPlane([x - w, y - w]), Bq = P.fromPlane([x + w, y - w]), Cq = P.fromPlane([x + w, y + w]), Dq = P.fromPlane([x - w, y + w]);
+    const up = p => [p[0], p[1] - h];
+    const isSel = st.lv === 4 && pr.b.id === st.id || st.lv === 1 && cur3.lv.k === 'country' && pr.b.id === st.id;
+    const top = isSel ? '#2FB8B6' : '#A5B4FC', s1 = isSel ? '#0B8583' : '#6E7FD8', s2 = isSel ? '#086E6C' : '#5466C4', s3 = isSel ? '#119C9A' : '#8494E6';
+    const f = (pts, c) => `<path d="${path(pts)}" fill="${c}"/>`;
+    return `<g class="prism ${isSel ? 'sel' : ''}" data-id="${pr.b.id}">${f([A, Bq, up(Bq), up(A)], s1)}${f([A, Dq, up(Dq), up(A)], s3)}${f([Bq, Cq, up(Cq), up(Bq)], s2)}${f([Dq, Cq, up(Cq), up(Dq)], s1)}<path class="pt" d="${path([up(A), up(Bq), up(Cq), up(Dq)])}" fill="${top}"/>
+      ${h > 16 ? `<text class="val" x="${(up(A)[0] + up(Cq)[0]) / 2}" y="${up(A)[1] - 6}" text-anchor="middle">${fa(pr.v)}</text>` : ''}</g>`;
+  }
+  function paint(m, instant) {
+    const { prisms, mx, Hmax } = cur3; const from = prisms.map(p => p.h || 0); const to = prisms.map(p => p.b.series[m] / mx * Hmax);
+    const dur = instant ? 0 : 520, t0 = performance.now();
+    const step = now => { const k = dur ? Math.min(1, (now - t0) / dur) : 1; const e = 1 - Math.pow(1 - k, 3);
+      const g = U.$('#prisms'); if (!g) return;
+      g.innerHTML = prisms.map((p, i) => { p.h = from[i] + (to[i] - from[i]) * e; p.v = p.b.series[m]; return p.h > .5 ? prismSvg(p, p.h) : ''; }).join('');
+      if (k < 1) requestAnimationFrame(step); else U.$$('#prisms .prism').forEach(el => { const pr = prisms.find(p => p.b.id === el.dataset.id);
+        el.onclick = () => { U.tip(null); pr.b.go(); }; el.onmousemove = e => U.tip(e, `<b>${pr.b.full}</b><br>${fa(pr.b.series[month])} رکورد تا پایان ${B.MONTHS[month]}<br><small>برای ورود بزنید</small>`); el.onmouseleave = () => U.tip(null); }); };
+    requestAnimationFrame(step);
+  }
+  function months() {
+    const mx = Math.max(...B.totals.monthly);
+    U.$('#months').innerHTML = B.MONTHS.map((n, i) => `<button class="${i === month ? 'on' : i < month ? 'past' : ''}" data-i="${i}" aria-label="${n}"><i style="height:${6 + B.totals.monthly[i] / mx * 26}px"></i>${n}</button>`).join('');
+    U.$$('#months button').forEach(b => b.onclick = () => { stop(); setMonth(+b.dataset.i); });
+    U.$('#mlabel').textContent = B.MONTHS[month] + ' ۱۴۰۵';
+  }
+  function setMonth(m) { month = m; paint(m); months(); }
+  function togglePlay() { if (playing) return stop(); if (month === 7) setMonth(0); U.$('#play').innerHTML = ic('pause', 'sm'); playing = setInterval(() => { if (month >= 7) return stop(); setMonth(month + 1); }, 900); }
+  function stop() { clearInterval(playing); playing = null; const p = U.$('#play'); if (p) p.innerHTML = ic('play', 'sm'); }
+  addEventListener('resize', () => { if (view === '3d' && U.$('#iso')) draw3d(); });
+  window.MA = { render, destroy: () => { stop(); view = '2d'; month = 7; if (map) { map.remove(); map = null; } } };
 })();

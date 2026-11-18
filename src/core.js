@@ -41,12 +41,13 @@
   };
   const ic = (n, cls = '') => `<svg class="i ${cls}" viewBox="0 0 24 24" aria-hidden="true"><path d="${P[n]}"/></svg>`;
   const av = (x, cls = '') => `<span class="av ${cls} ${x.role && /پروژه/.test(x.role) ? 'b' : ''}" aria-hidden="true">${esc(x.ini)}</span>`;
-  const heat = (days, mini = false, weeks = 12) => { const d = days.slice(-weeks * 7); return `<div class="heat ${mini ? 'mini' : ''}" role="img" aria-label="فعالیت ${fa(weeks)} هفته اخیر">${d.map(v => `<i class="${v === 0 ? '' : v < 3 ? 'l1' : v < 5 ? 'l2' : v < 8 ? 'l3' : 'l4'}"></i>`).join('')}</div>`; };
+  const heat = (days, mini = false, weeks = 4) => { const d = days.slice(-weeks * 7); return `<div class="heat ${mini ? 'mini' : ''}" role="img" aria-label="فعالیت ${fa(weeks)} هفته اخیر">${d.map(v => `<i class="${v === 0 ? '' : v < 3 ? 'l1' : v < 5 ? 'l2' : v < 8 ? 'l3' : 'l4'}"></i>`).join('')}</div>`; };
   const steps = (n, total = 6) => `<div class="steps" role="img" aria-label="${fa(n)} از ${fa(total)} مرحله">${Array.from({ length: total }, (_, i) => `<i class="${i < n ? 'on' : ''}"></i>`).join('')}</div>`;
   const statusBadge = s => `<span class="badge ${s === 'تأیید شده' ? 'ok' : s === 'در انتظار تأیید' ? 'wait' : s === 'برگشت برای اصلاح' ? 'warn' : ''}">${s}</span>`;
 
   /* sequential teal ramp (light → dark) */
-  const RAMP = ['#E6F7F7', '#B3E6E5', '#7FD3D1', '#40BDBB', '#00A3A1', '#007C7A', '#005856'];
+  const RAMP = ['#EEF4F4', '#D2E8E7', '#A9D5D3', '#78BCBA', '#459F9D', '#257E7C', '#155E5C'];
+  const CAT = { hood: '#0CA5A3', prop: '#3B5BDB', street: '#F59F00', feat: '#F76707', exec: '#495057', part: '#4DABF7', alert: '#C92A2A' };
   const ramp = t => RAMP[Math.max(0, Math.min(RAMP.length - 1, Math.floor(t * RAMP.length)))];
   const inkOn = c => (RAMP.indexOf(c) >= 4 ? '#fff' : '#0F172A');
 
@@ -73,7 +74,7 @@
       ${NAV.map(([i, t, on, tag]) => i === 'g' ? `<div class="grp">${t}</div>` : `<a class="nav ${on ? 'on' : ''}" href="#" title="${t}">${ic(i)}<span>${t}</span>${tag ? `<em class="tag">${tag}</em>` : ''}</a>`).join('')}
     </aside><div class="main"><header class="top" id="top"></header><main class="page" id="page"></main></div></div>
     <nav class="switch" aria-label="انتخاب مدل">
-      <a href="#m1" data-m="m1">مدل ۱<span class="long"> · اتاق فرمان نقشه</span></a><a href="#m2" data-m="m2">مدل ۲<span class="long"> · اطلس استان‌ها</span></a><a href="#m3" data-m="m3">مدل ۳<span class="long"> · نقشه سه‌بعدی و زمان</span></a>
+      <a href="#m1" data-m="m1">مدل الف<span class="long"> · نقشه</span></a><a href="#m2" data-m="m2">مدل ب<span class="long"> · اطلس</span></a>
       <span class="sep arch"></span><a class="arch" href="archive/">کانسپت‌های قبلی</a></nav>`;
     $$('.nav').forEach(a => a.addEventListener('click', e => e.preventDefault()));
   }
@@ -136,5 +137,5 @@
   const centroid = ring => { let a = 0, x = 0, y = 0; for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) { const f = ring[j][0] * ring[i][1] - ring[i][0] * ring[j][1]; a += f; x += (ring[j][0] + ring[i][0]) * f; y += (ring[j][1] + ring[i][1]) * f; } return a ? [x / (3 * a), y / (3 * a)] : ring[0]; };
   const biggest = f => ringsOf(f).sort((a, b) => b.length - a.length)[0];
 
-  window.UI = { $, $$, fa, pct, spct, legend, money, faDate, rel, esc, ic, av, heat, steps, statusBadge, RAMP, ramp, inkOn, tip, chart, clearCharts, shell, topbar, aiCard, attention, evChip, evGo, evText, expertTable, bullets, trendChart, TREND_LEGEND, toast, ringsOf, bboxOf, centroid, biggest };
+  window.UI = { CAT, $, $$, fa, pct, spct, legend, money, faDate, rel, esc, ic, av, heat, steps, statusBadge, RAMP, ramp, inkOn, tip, chart, clearCharts, shell, topbar, aiCard, attention, evChip, evGo, evText, expertTable, bullets, trendChart, TREND_LEGEND, toast, ringsOf, bboxOf, centroid, biggest };
 })();

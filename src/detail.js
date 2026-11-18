@@ -88,7 +88,7 @@
   }
 
   /* ---------- router ---------- */
-  const MODELS = { m1: window.M1, m2: window.M2, m3: window.M3 };
+  const MODELS = { m1: window.MA, m2: window.MB };
   let active;
   function route() {
     const h = location.hash.replace('#', '') || 'm1';
