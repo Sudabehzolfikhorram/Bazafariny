@@ -663,11 +663,11 @@ svg.leaflet-image-layer.leaflet-interactive path {
 </style><style>/* Bazafariniyar · super-admin dashboard · 3 models. Light mode only. */
 :root{
   --bg:#F8FAFC; --surface:#FFFFFF; --sunk:#F1F5F9; --line:#E2E8F0; --line-2:#CBD5E1;
-  --ink:#0F172A; --ink-2:#334155; --muted:#64748B; --faint:#94A3B8;
+  --ink:#1C2B45; --ink-2:#3B4A63; --sel:#1E40AF; --sel-50:#EEF2FF; --muted:#64748B; --faint:#94A3B8;
   --p:#00ADAB; --p-ink:#007C7A; --p-700:#006866; --p-50:#E6F7F7; --p-100:#CCEFEE; --p-200:#99DFDD; --p-300:#66CECD; --p-400:#33BEBC;
   --s:#1E40AF; --s-50:#EEF2FF; --s-100:#DBE4FF; --s-300:#93A8E8;
   --warn:#C92A2A; --warn-50:#FFF5F5; --warn-200:#FFC9C9;
-  --c-hood:#0CA5A3; --c-prop:#3B5BDB; --c-street:#F59F00; --c-feat:#F76707; --c-exec:#495057; --c-part:#4DABF7;
+  --c-hood:#0CA5A3; --c-prop:#3B5BDB; --c-street:#F59F00; --c-feat:#F76707; --c-exec:#74B816; --c-part:#4DABF7;
   --r:16px; --r-sm:10px; --r-xs:8px;
   --sh-1:0 1px 2px rgba(15,23,42,.05); --sh-2:0 1px 2px rgba(15,23,42,.04),0 8px 24px -8px rgba(15,23,42,.10); --sh-3:0 12px 40px -12px rgba(15,23,42,.22);
   --side:248px;
@@ -699,7 +699,7 @@ svg.i.sm{width:16px;height:16px}
 .side .grp{font-size:11.5px;color:var(--faint);padding:14px 10px 4px}
 .nav{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:var(--r-sm);color:var(--ink-2);font-weight:500}
 .nav:hover{background:var(--sunk)}
-.nav{padding:9px 12px}.nav.on{background:var(--ink);color:#fff;font-weight:600}.nav.on:hover{background:var(--ink)}
+.nav{padding:9px 12px}.nav.on{background:var(--p-50);color:var(--p-700);font-weight:700}.nav.on:hover{background:var(--p-100)}
 .nav .tag{margin-inline-start:auto;font-size:11px;background:var(--s-50);color:var(--s);border-radius:99px;padding:0 8px}
 .main{flex:1;min-width:0;display:flex;flex-direction:column}
 .top{display:flex;align-items:center;gap:12px;padding:16px 28px;background:var(--bg);position:sticky;top:0;z-index:20}
@@ -719,12 +719,12 @@ svg.i.sm{width:16px;height:16px}
 .page{padding:4px 28px 120px;display:flex;flex-direction:column;gap:20px}
 
 /* model switcher (prototype control) */
-.switch{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);z-index:60;display:flex;align-items:center;gap:4px;background:rgba(15,23,42,.92);backdrop-filter:blur(8px);border-radius:99px;padding:5px;box-shadow:var(--sh-3)}
+.switch{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);z-index:60;display:flex;align-items:center;gap:4px;background:rgba(255,255,255,.96);border:1px solid var(--line);backdrop-filter:blur(8px);border-radius:99px;padding:5px;box-shadow:var(--sh-3)}
 body:has(.ma) .switch{left:calc((100vw - 470px)/2)}
-.switch a{color:#CBD5E1;padding:7px 14px;border-radius:99px;font-size:12.5px;font-weight:500;white-space:nowrap}
-.switch a.on{background:#fff;color:var(--ink);font-weight:700}
-.switch a:hover:not(.on){color:#fff}
-.switch .sep{width:1px;height:18px;background:#334155;margin:0 4px}
+.switch a{color:var(--muted);padding:7px 14px;border-radius:99px;font-size:12.5px;font-weight:500;white-space:nowrap}
+.switch a.on{background:var(--p);color:#fff;font-weight:700}
+.switch a:hover:not(.on){color:var(--p-700);background:var(--p-50)}
+.switch .sep{width:1px;height:18px;background:var(--line);margin:0 4px}
 
 /* ---------- primitives ---------- */
 .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh-1)}
@@ -741,7 +741,7 @@ body:has(.ma) .switch{left:calc((100vw - 470px)/2)}
 .delta.down{background:var(--warn-50);color:var(--warn)}
 .chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:5px 12px;font-size:12.5px;color:var(--ink-2);white-space:nowrap}
 .chip:hover{border-color:var(--line-2)}
-.chip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.chip.on{background:var(--p-50);color:var(--p-700);border-color:var(--p-200)}
 .chip .sw{width:8px;height:8px;border-radius:50%}
 .seg{display:inline-flex;background:var(--sunk);border-radius:12px;padding:3px;gap:2px}
 .seg button{padding:5px 12px;border-radius:9px;font-size:12.5px;color:var(--muted);font-weight:500;white-space:nowrap}
@@ -796,7 +796,7 @@ button.row:hover,a.row:hover{background:var(--sunk);border-radius:10px}
 .ai-ans.on{display:block}
 
 /* tooltip */
-.tip{position:fixed;z-index:80;pointer-events:none;background:var(--ink);color:#fff;border-radius:10px;padding:8px 10px;font-size:12px;line-height:1.6;box-shadow:var(--sh-3);max-width:260px;opacity:0;transition:opacity .12s}
+.tip{position:fixed;z-index:80;pointer-events:none;background:#fff;color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:12px;line-height:1.6;box-shadow:var(--sh-3);max-width:260px;opacity:0;transition:opacity .12s}
 .tip.on{opacity:1}
 .tip b{font-size:13px}
 
@@ -866,7 +866,7 @@ button.row:hover,a.row:hover{background:var(--sunk);border-radius:10px}
 .bullet .track{position:absolute;inset:7px 0;background:var(--sunk);border-radius:99px}
 .bullet .act{position:absolute;top:7px;bottom:7px;right:0;background:var(--p);border-radius:99px}
 .bullet .act.late{background:var(--warn)}
-.bullet .plan{position:absolute;top:2px;bottom:2px;width:2px;background:var(--ink);border-radius:2px}
+.bullet .plan{position:absolute;top:2px;bottom:2px;width:2px;background:var(--sel);border-radius:2px}
 
 /* =============== MODEL 2 · atlas =============== */
 .m2 .hero{display:grid;grid-template-columns:1.15fr 1fr;gap:20px;align-items:stretch}
@@ -883,7 +883,7 @@ button.row:hover,a.row:hover{background:var(--sunk);border-radius:10px}
 .atlas svg{width:100%;height:auto;display:block}
 .tile{cursor:pointer}
 .tile rect.bg{transition:transform .15s}
-.tile:hover rect.bg{stroke:var(--ink);stroke-width:1.5}
+.tile:hover rect.bg{stroke:var(--p);stroke-width:2}
 .tile.sel rect.bg{stroke:var(--s);stroke-width:2.5}
 .prof{padding:0;display:flex;flex-direction:column;overflow:hidden}
 .prof .top2{padding:20px;border-bottom:1px solid var(--line);display:flex;gap:14px;align-items:center}
@@ -932,7 +932,7 @@ button.row:hover,a.row:hover{background:var(--sunk);border-radius:10px}
 .m3 .title3{top:18px;left:18px;padding:14px 16px;max-width:330px}
 .m3 .title3 h2{margin:0 0 2px;font-size:18px;font-weight:800}
 .m3 .time{left:18px;right:18px;bottom:18px;padding:14px 18px;display:flex;align-items:center;gap:16px}
-.play{width:42px;height:42px;border-radius:50%;background:var(--ink);color:#fff;display:grid;place-items:center;flex:none}
+.play{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#33BEBC,#00ADAB);color:#fff;display:grid;place-items:center;flex:none}
 .months{flex:1;display:grid;grid-template-columns:repeat(8,1fr);gap:4px;align-items:end}
 .months button{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:11.5px;color:var(--muted);padding:2px 0}
 .months button i{width:100%;border-radius:6px 6px 2px 2px;background:var(--p-100);display:block}
@@ -1079,7 +1079,7 @@ button.gr:hover{background:var(--sunk)}
 .ma .ctx{top:16px;right:16px;bottom:16px;width:376px;display:flex;flex-direction:column;overflow:hidden}
 .ma .viewsw{left:calc((100% - 392px)/2);top:16px;transform:translateX(-50%);padding:4px;display:flex;gap:2px}
 .ma .viewsw button{padding:7px 14px;border-radius:12px;font-size:12.5px;font-weight:600;color:var(--muted);display:flex;align-items:center;gap:6px}
-.ma .viewsw button.on{background:var(--ink);color:#fff}
+.ma .viewsw button.on{background:linear-gradient(135deg,#33BEBC,#00ADAB);color:#fff}
 .ma .layersBtn{top:16px;left:62px;display:flex;align-items:center;gap:8px;padding:9px 14px;font-size:12.5px;font-weight:600;color:var(--ink-2)}
 .ma .tools{top:62px;left:62px;padding:8px;display:flex;flex-direction:column;gap:8px;width:244px}
 .ma .tools[hidden]{display:none}
@@ -1111,7 +1111,7 @@ button.gr:hover{background:var(--sunk)}
 .prof2 .shape{width:76px;height:76px;flex:none;background:var(--sunk);border-radius:16px;display:grid;place-items:center}
 .prof2 .shape svg{width:62px;height:62px}
 .prof2 h3{margin:2px 0 0;font-size:22px;font-weight:800;line-height:1.2}
-.rank{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-weight:700;background:var(--ink);color:#fff;border-radius:99px;padding:1px 9px}
+.rank{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-weight:700;background:var(--sel-50);color:var(--sel);border-radius:99px;padding:1px 9px}
 .pstats{display:grid;grid-template-columns:1fr 1fr 1fr;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
 .pstats>div{padding:12px 14px;display:flex;align-items:center;gap:10px;border-inline-start:1px solid var(--line)}
 .pstats>div:first-child{border:0}
@@ -1128,6 +1128,88 @@ button.gr:hover{background:var(--sunk)}
 .chain .lv .bar{height:4px}
 .chain .lv small{font-size:10.5px;color:var(--faint)}
 .pacts{display:flex;gap:8px;padding:0 20px 18px}
+
+/* ===== v3: soft gradients, no black states ===== */
+.bar i{background:linear-gradient(90deg,#63D3D1,#00ADAB)}
+.steps i.on{background:linear-gradient(90deg,#63D3D1,#00ADAB)}
+.bullet .act{background:linear-gradient(270deg,#63D3D1,#0CA5A3)}
+.bullet .act.late{background:linear-gradient(270deg,#FFB3B3,#E03131)}
+.mini-h{display:flex;align-items:center;gap:8px}
+/* stacked proportion bar + legend */
+.stk{display:flex;gap:2px;border-radius:99px;overflow:hidden;margin-top:8px}
+.stk i{display:block;min-width:2px}
+.lgd2{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:8px;font-size:12px;color:var(--ink-2)}
+.lgd2 span{display:inline-flex;align-items:center;gap:6px}
+.lgd2 i{width:10px;height:10px;border-radius:3px;display:inline-block}
+.lgd2 b{font-weight:700;color:var(--ink)}
+/* kpi strip */
+.kstrip2{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh-1)}
+.kstrip2 .k{display:flex;flex-direction:column;gap:2px;padding:14px 16px;border-inline-start:1px solid var(--line);min-width:0}
+.kstrip2 .k:first-child{border:0}
+.kstrip2 .v{font-size:22px;font-weight:800;color:var(--ink);line-height:1.2}
+.kstrip2 .l{font-size:12px;color:var(--muted)}
+.kstrip2 small{font-size:11.5px;color:var(--faint)}
+.kstrip2 .k.bad .v{color:#C92A2A}.kstrip2 .k.bad small{color:#E03131}
+.kstrip2 .k.good .v{color:#0B7F7D}
+.renew{display:flex;flex-direction:column;gap:16px;margin-top:12px}
+.rn-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.rn-grid>.card{display:flex;flex-direction:column}
+/* service rows (bar = value, tick = norm) */
+.srv{display:flex;flex-direction:column;gap:9px;margin-top:10px}
+.sr{display:grid;grid-template-columns:62px 1fr 40px 86px;gap:10px;align-items:center;font-size:12.5px}
+.sr .l{color:var(--ink-2)}
+.sr .tr{position:relative;height:10px;background:var(--sunk);border-radius:99px}
+.sr .tr .b{position:absolute;top:0;bottom:0;right:0;border-radius:99px}
+.sr .tr .n{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--sel);border-radius:2px}
+.sr b{font-weight:700;text-align:left}
+.sr small{font-size:11.5px}
+.neg{color:#E03131!important}
+/* horizontal rows */
+.hz{display:flex;flex-direction:column;gap:9px;margin-top:10px}
+.hr{display:grid;grid-template-columns:118px 1fr 44px 70px;gap:10px;align-items:center;font-size:12.5px;color:var(--ink-2)}
+.hr .tr{height:10px;background:var(--sunk);border-radius:99px;overflow:hidden;display:flex;justify-content:flex-start}
+.hr .tr i{display:block;height:100%;border-radius:99px}
+.hr b{font-weight:700;color:var(--ink);text-align:left}
+/* worst neighbourhoods */
+.wtab{display:flex;flex-direction:column;margin-top:8px}
+.wr{display:grid;grid-template-columns:minmax(160px,1.1fr) 2fr 56px 84px;gap:16px;align-items:center;padding:10px 6px;border-bottom:1px solid var(--line);color:var(--ink);border-radius:10px}
+.wr:last-child{border:0}
+.wr:hover{background:var(--p-50)}
+.wr .t{display:flex;flex-direction:column}.wr .t small{color:var(--muted);font-size:11.5px}
+.wr .stk{margin:0}
+.wr b.num{text-align:left}
+/* type chips */
+.tchip{font-size:11px;font-weight:700;border-radius:99px;padding:2px 9px}
+.t-فرسوده{background:#FFF3BF;color:#8F5B00}.t-غیررسمی{background:#EEF2FF;color:#364FC7}.t-مخاطره{background:#FFF0F0;color:#C92A2A}
+/* experts + right column */
+.xgrid{align-items:stretch}
+.stackcol{display:flex;flex-direction:column;gap:20px;min-width:0}
+.stackcol .rhythm{align-self:stretch}
+.stackcol .fsc{flex:1}
+.fsn{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
+.fsn div{background:var(--sunk);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:2px}
+.fsn b{font-size:17px;font-weight:800;color:var(--ink)}.fsn small{font-size:11.5px;color:var(--muted)}
+/* hood detail */
+.donut-wrap{display:grid;grid-template-columns:1fr 130px;align-items:center;gap:8px}
+.dl{display:flex;flex-direction:column;gap:8px;font-size:12.5px;color:var(--ink-2)}
+.dl span{display:flex;align-items:center;gap:8px}.dl i{width:10px;height:10px;border-radius:3px}.dl b{margin-inline-start:auto;color:var(--ink)}
+.prio{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.pi{display:flex;align-items:center;gap:10px;background:var(--sunk);border-radius:12px;padding:10px 12px}
+.pn{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:800;font-size:12.5px;background:linear-gradient(135deg,#63D3D1,#00ADAB)}
+.pi:nth-child(2) .pn{background:linear-gradient(135deg,#9DB2FF,#4C6EF5)}.pi:nth-child(3) .pn{background:linear-gradient(135deg,#FFE08A,#F59F00)}
+.cap{display:flex;align-items:baseline;gap:8px}.cap b{font-size:22px;font-weight:800}.cap span{font-size:12.5px;color:var(--muted)}
+.atab{margin-top:8px;font-size:12.5px}
+.atab .ah,.atab .ar{display:grid;grid-template-columns:minmax(180px,2fr) 1fr 90px 64px 100px;gap:12px;align-items:center;padding:9px 6px}
+.atab .ah{color:var(--faint);font-size:11.5px;border-bottom:1px solid var(--line)}
+.atab .ar{border-bottom:1px solid var(--line);color:var(--ink-2)}.atab .ar:last-child{border:0}
+.atab .ar b{font-weight:600;color:var(--ink)}
+.sbadge{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;color:var(--c);background:#fff;border:1px solid var(--line);border-radius:99px;padding:2px 10px 2px 8px}
+.sbadge::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--g)}
+@media (max-width:1280px){.rn-grid{grid-template-columns:1fr 1fr}.kstrip2{grid-template-columns:repeat(4,1fr)}}
+
+.wcard .wr{padding:7px 6px}.wcard .wr .t b{font-size:13px}
+
+body:has(.detail) .switch{display:none}
 </style></head><body><script>/* @preserve
  * Leaflet 1.9.4, a JS library for interactive maps. https://leafletjs.com
  * (c) 2010-2023 Vladimir Agafonkin, (c) 2010-2011 CloudMade
@@ -1390,9 +1472,9 @@ window.D={"prov":{"Tehran":{"fa":"تهران","hoods":46,"cities":9,"props":1193
 
   /* sequential teal ramp (light → dark) */
   const RAMP = ['#EEF4F4', '#D2E8E7', '#A9D5D3', '#78BCBA', '#459F9D', '#257E7C', '#155E5C'];
-  const CAT = { hood: '#0CA5A3', prop: '#3B5BDB', street: '#F59F00', feat: '#F76707', exec: '#495057', part: '#4DABF7', alert: '#C92A2A' };
+  const CAT = { hood: '#0CA5A3', prop: '#3B5BDB', street: '#F59F00', feat: '#F76707', exec: '#74B816', part: '#4DABF7', alert: '#C92A2A' };
   const ramp = t => RAMP[Math.max(0, Math.min(RAMP.length - 1, Math.floor(t * RAMP.length)))];
-  const inkOn = c => (RAMP.indexOf(c) >= 4 ? '#fff' : '#0F172A');
+  const inkOn = c => (RAMP.indexOf(c) >= 4 ? '#fff' : '#1E40AF');
 
   /* tooltip */
   let tipEl;
@@ -1493,13 +1575,13 @@ window.D={"prov":{"Tehran":{"fa":"تهران","hoods":46,"cities":9,"props":1193
   /* ---------- experts (compact, 4 weeks) ---------- */
   const SORTS = [['recs28', 'بیشترین ثبت'], ['lastDays', 'کم‌فعال‌ها'], ['pending', 'منتظر تأیید']];
   const weeks = x => { const w = [0, 1, 2, 3].map(i => x.days.slice(-28 + i * 7, -28 + i * 7 + 7 || undefined).reduce((a, b) => a + b, 0)); const m = Math.max(1, ...w);
-    return `<span class="wk4" title="ثبت هفتگی، ۴ هفته‌ی اخیر: ${w.map(fa).join('، ')}">${w.map((v, i) => `<i style="height:${Math.max(8, v / m * 100)}%;background:${v === 0 ? '#E2E8F0' : i === 3 ? '#3B5BDB' : '#A5B4FC'}"></i>`).join('')}</span>`; };
+    return `<span class="wk4" title="ثبت هفتگی، ۴ هفته‌ی اخیر: ${w.map(fa).join('، ')}">${w.map((v, i) => `<i style="height:${Math.max(8, v / m * 100)}%;background:${v === 0 ? '#E2E8F0' : i === 3 ? 'linear-gradient(180deg,#9DB2FF,#4C6EF5)' : 'linear-gradient(180deg,#DDE4FF,#B4C3FC)'}"></i>`).join('')}</span>`; };
   function expertRows(list) {
     return list.map(x => { const d = x.recs28 - x.prev28; const status = x.lastDays > 14 ? `<span class="badge warn">${fa(x.lastDays)} روز بی‌فعالیت</span>` : x.pending ? `<span class="badge wait">${fa(x.pending)} منتظر تأیید</span>` : `<span class="badge ok">فعال</span>`;
       return `<a class="xrow" href="#d/expert/${x.id}">${U.av(x)}<span class="t"><b>${x.n}</b><small>${x.role.replace('کارشناس ', '')} · ${x.provFa}</small></span>
         <span class="xn num"><b>${fa(x.recs28)}</b><small class="${d < 0 ? 'neg' : ''}">${d >= 0 ? '▲' : '▼'} ${fa(Math.abs(d))}</small></span>
         ${weeks(x)}
-        <span class="xa"><span class="bar"><i style="width:${x.approval}%;background:${x.approval < 80 ? '#F59F00' : '#0CA5A3'}"></i></span><small>${pct(x.approval)} تأیید</small></span>
+        <span class="xa"><span class="bar"><i style="width:${x.approval}%;background:${x.approval < 80 ? 'linear-gradient(90deg,#FFE08A,#F59F00)' : 'linear-gradient(90deg,#63D3D1,#0CA5A3)'}"></i></span><small>${pct(x.approval)} تأیید</small></span>
         <span class="xs">${status}</span></a>`; }).join('');
   }
   function expertsCard(limit = 6) {
@@ -1515,7 +1597,7 @@ window.D={"prov":{"Tehran":{"fa":"تهران","hoods":46,"cities":9,"props":1193
   }
 
   /* ---------- rhythm: 30 days, compact ---------- */
-  const KINDS = [['ثبت', .52, CAT.hood], ['ویرایش', .24, '#91A7FF'], ['ارسال برای تأیید', .14, CAT.prop], ['اصلاح پس از برگشت', .10, CAT.street]];
+  const KINDS = [['ثبت', .52, 'linear-gradient(180deg,#63D3D1,#0CA5A3)'], ['ویرایش', .24, 'linear-gradient(180deg,#C5D0FF,#91A7FF)'], ['ارسال برای تأیید', .14, 'linear-gradient(180deg,#9DB2FF,#4C6EF5)'], ['اصلاح پس از برگشت', .10, 'linear-gradient(180deg,#FFE08A,#F59F00)']];
   function rhythmCard() {
     const days = 30; const tot = [...Array(days).keys()].map(d => B.experts.reduce((a, x) => a + x.days[84 - days + d], 0));
     const sum = tot.reduce((a, b) => a + b, 0), mx = Math.max(...tot), best = tot.indexOf(mx);
@@ -1555,6 +1637,163 @@ window.D={"prov":{"Tehran":{"fa":"تهران","hoods":46,"cities":9,"props":1193
   }
   Object.assign(U, { expertsCard, rhythmCard, itemPanel, CAT });
 })();
+</script><script>/* Neighbourhood regeneration indicators (from the «پایش محلات ناکارآمد» reference dashboards):
+   type of inefficiency, building condition, per-capita services vs norm, hazard exposure, income tiers, actions.
+   Values are generated deterministically per neighbourhood until the system stores them. */
+(function () {
+  'use strict';
+  const B = window.BZ, U = window.UI, { fa, pct, esc, ic } = U;
+  let seed = 7310; const rnd = () => { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; };
+  const ri = (a, b) => a + Math.floor(rnd() * (b - a + 1));
+
+  /* soft semantic gradients: never flat, never black */
+  const G = {
+    teal: ['#63D3D1', '#0CA5A3'], blue: ['#9DB2FF', '#4C6EF5'], sky: ['#A5D8FF', '#4DABF7'], amber: ['#FFE08A', '#F59F00'],
+    orange: ['#FFC08A', '#F76707'], red: ['#FFB3B3', '#E03131'], green: ['#B2F2BB', '#2F9E44'], violet: ['#C5CDF5', '#6E7FD8'], slate: ['#DCE3EC', '#94A3B8']
+  };
+  const grad = (k, dir = '90deg') => `linear-gradient(${dir},${G[k][0]},${G[k][1]})`;
+  const solid = k => G[k][1];
+
+  const TYPES = [['فرسوده', 'بافت فرسوده', 'amber'], ['غیررسمی', 'سکونتگاه غیررسمی', 'blue'], ['مخاطره', 'در معرض مخاطره', 'red']];
+  const COND = [['نوساز', 'teal'], ['استاندارد', 'blue'], ['کم‌دوام', 'amber'], ['مخروبه', 'red']];
+  const SERV = [['آموزشی', 'education', 1.9, 'blue'], ['درمانی', 'health', .6, 'sky'], ['ورزشی', 'sport', .9, 'orange'], ['فضای سبز', 'green', 7, 'green'], ['فرهنگی', 'culture', .5, 'violet']];
+  const HAZ = [['حریم گسل', 'red'], ['حریم رودخانه و مسیل', 'sky'], ['ناپایداری شیب', 'amber'], ['حریم خطوط نیرو', 'violet']];
+  const INC = [['دهک ۱ تا ۳ (زیر خط فقر)', 'red'], ['دهک ۴ و ۵', 'amber'], ['دهک ۶ و ۷', 'blue'], ['دهک ۸ به بالا', 'teal']];
+  const ACT = [['ایجاد دیواره و ساماندهی بستر رودخانه', 'حریم رودخانه'], ['تقویت و پایدارسازی شیب‌های بحرانی', 'بخش شرقی محله'], ['بهسازی و مقاوم‌سازی ساختمان‌های ناپایدار', 'بافت مسکونی'],
+    ['احداث مسیر دسترسی اضطراری', 'شمال محله'], ['آزادسازی و ساخت فضای سبز محله‌ای', 'مرکز محله'], ['احداث مرکز محله و کتابخانه', 'ضلع غربی'], ['ساماندهی بازارچه و کسب‌وکار خرد', 'محور اصلی'], ['نوسازی شبکه‌ی معابر زیر ۶ متر', 'کل محله']];
+  const STAT = [['در حال اجرا', 'teal'], ['مطالعات', 'blue'], ['آماده‌ی اجرا', 'amber'], ['متوقف', 'red']];
+  const PRIO = { 'فرسوده': ['نوسازی و مقاوم‌سازی', 'بهسازی معابر', 'ارتقای خدمات محله‌ای'], 'غیررسمی': ['توانمندسازی اجتماعی و اقتصادی', 'بهسازی عملکردی', 'نوسازی و مقاوم‌سازی'], 'مخاطره': ['کاهش خطر و جابه‌جایی از حریم', 'پایدارسازی زمین', 'ایجاد دسترسی اضطراری'] };
+
+  B.D.hoods.forEach((h, i) => {
+    seed = 7310 + i * 131;
+    const t = rnd(); h.type = t < .5 ? 'فرسوده' : t < .8 ? 'غیررسمی' : 'مخاطره';
+    h.area = Math.round((25 + rnd() * 150) * 10) / 10;
+    h.hh = Math.round(h.pop / (3.1 + rnd() * .6)); h.units = Math.round(h.hh * (0.82 + rnd() * .12));
+    const base = h.type === 'فرسوده' ? [10, 30, 42, 18] : h.type === 'غیررسمی' ? [8, 22, 48, 22] : [16, 38, 34, 12];
+    let c = base.map(v => Math.max(3, v + ri(-6, 6))); const s = c.reduce((a, b) => a + b, 0); c = c.map(v => v / s * 100);
+    h.cond = c; h.unstable = Math.round(h.units * (c[2] + c[3]) / 100); h.renewed = Math.round(h.units * c[0] / 100);
+    h.capacity = Math.round(h.unstable * (0.35 + rnd() * .3));
+    h.serv = SERV.map(([, , norm]) => { const v = norm * (0.45 + rnd() * 1.25); return { v: Math.round(v * 100) / 100, city: Math.round(norm * (0.9 + rnd() * .5) * 100) / 100, norm }; });
+    h.haz = h.type === 'مخاطره' ? [ri(8, 28), ri(10, 34), ri(6, 22), ri(3, 12)] : [ri(0, 6), ri(0, 8), ri(0, 6), ri(0, 4)];
+    const inc = h.type === 'غیررسمی' ? [46, 28, 18, 8] : h.type === 'فرسوده' ? [34, 30, 24, 12] : [30, 30, 26, 14];
+    let ic2 = inc.map(v => Math.max(2, v + ri(-5, 5))); const si = ic2.reduce((a, b) => a + b, 0); h.inc = ic2.map(v => v / si * 100);
+    h.prio = PRIO[h.type];
+    h.acts = [...Array(ri(3, 6)).keys()].map(k => { const a = ACT[(i * 3 + k * 5) % ACT.length]; const y = 1404 + ri(0, 1);
+      return { n: a[0], at: a[1], from: y, to: y + ri(1, 3), budget: ri(8, 48) * 10, st: STAT[(i + k * 2) % 7 < 3 ? 0 : (i + k) % 4][0] }; });
+  });
+
+  /* ---------- aggregation for any scope ---------- */
+  function agg(hoods) {
+    const sum = f => hoods.reduce((a, h) => a + f(h), 0); const n = hoods.length || 1;
+    const units = sum(h => h.units);
+    return {
+      n: hoods.length, pop: sum(h => h.pop), hh: sum(h => h.hh), units, area: sum(h => h.area), unstable: sum(h => h.unstable), renewed: sum(h => h.renewed), capacity: sum(h => h.capacity),
+      types: TYPES.map(([k]) => hoods.filter(h => h.type === k).length),
+      cond: COND.map((_, j) => units ? sum(h => h.units * h.cond[j] / 100) / units * 100 : 0),
+      serv: SERV.map((_, j) => ({ v: sum(h => h.serv[j].v) / n, norm: SERV[j][2], short: hoods.filter(h => h.serv[j].v < h.serv[j].norm).length })),
+      haz: HAZ.map((_, j) => sum(h => h.area * h.haz[j] / 100)),
+      acts: hoods.flatMap(h => h.acts.map(a => Object.assign({ h }, a))),
+    };
+  }
+
+  /* ---------- small chart primitives (HTML/CSS, gradients) ---------- */
+  const stack = (parts, h = 14) => `<div class="stk" style="height:${h}px">${parts.filter(p => p[1] > 0).map(([lab, v, k]) => `<i style="flex:${v};background:${grad(k)}" title="${lab}: ${pct(v)}"></i>`).join('')}</div>`;
+  const keyRow = parts => `<div class="lgd2">${parts.map(([lab, v, k, extra]) => `<span><i style="background:${grad(k)}"></i>${lab}<b class="num">${extra != null ? extra : pct(v)}</b></span>`).join('')}</div>`;
+  /* dumbbell-ish: bar = value, tick = norm; red tint when short */
+  /* rows: [label, value, norm, colourKey, note]; bar width = value/norm (tick at the norm) */
+  function servRows(rows) {
+    const max = 1.7, W = x => Math.min(100, x / max * 100);
+    return `<div class="srv">${rows.map(([lab, v, norm, k, note]) => { const short = v < norm * .98;
+      return `<div class="sr"><span class="l">${lab}</span><div class="tr"><i class="b" style="width:${W(v / norm)}%;background:${grad(short ? 'red' : k)}"></i><i class="n" style="right:${W(1)}%" title="معیار ${fa(norm)}"></i></div>
+        <b class="num ${short ? 'neg' : ''}">${fa(Math.round(v * 100) / 100)}</b><small class="${short ? 'neg' : 'muted'}">${note || (short ? 'کمبود' : 'مناسب')}</small></div>`; }).join('')}</div>`;
+  }
+  const kpiStrip = items => `<div class="kstrip2">${items.map(([l, v, s, tone]) => `<div class="k ${tone || ''}"><span class="v num">${v}</span><span class="l">${l}</span>${s ? `<small>${s}</small>` : ''}</div>`).join('')}</div>`;
+
+  /* ---------- section under the map (follows map scope) ---------- */
+  function renewSection(hoods, scopeName) {
+    const a = agg(hoods);
+    if (!a.n) return `<div class="card pad empty-hatch" style="text-align:center"><b>در ${scopeName} هنوز محله‌ای ثبت نشده</b><p class="lede">شاخص‌های محلات پس از ثبت اولین محله این‌جا نمایش داده می‌شوند.</p></div>`;
+        const bud = STAT.map(([s, k]) => [s, a.acts.filter(x => x.st === s).reduce((t, x) => t + x.budget, 0), k]); const budT = bud.reduce((t, x) => t + x[1], 0) || 1;
+    const hazT = a.haz.reduce((t, v) => t + v, 0);
+    const worst = [...hoods].sort((x, y) => (y.cond[2] + y.cond[3]) - (x.cond[2] + x.cond[3])).slice(0, 5);
+    return `
+      ${kpiStrip([['محله‌ی هدف', fa(a.n)], ['جمعیت', fa(a.pop)], ['خانوار', fa(a.hh)], ['واحد مسکونی', fa(a.units)], ['واحد ناپایدار', fa(a.unstable), pct(a.unstable / a.units * 100) + ' از واحدها', 'bad'], ['واحد نوساز', fa(a.renewed), pct(a.renewed / a.units * 100), 'good'], ['ظرفیت نوسازی', fa(a.capacity), 'واحد']])}
+      <div class="rn-grid">
+        <div class="card pad"><div class="h2"><h2>نوع ناکارآمدی</h2><div class="grow"></div><small class="muted">${fa(a.n)} محله</small></div>
+          ${stack(TYPES.map(([k, lab, c], j) => [lab, a.types[j], c]), 16)}
+          ${keyRow(TYPES.map(([k, lab, c], j) => [lab, a.types[j], c, fa(a.types[j])]))}
+          <div class="mini-h" style="margin-top:14px">وضعیت ابنیه<span class="grow"></span><small class="muted">سهم از واحدهای مسکونی</small></div>
+          ${stack(COND.map(([lab, k], j) => [lab, a.cond[j], k]), 16)}${keyRow(COND.map(([lab, k], j) => [lab, a.cond[j], k]))}</div>
+        <div class="card pad"><div class="h2"><h2>سرانه‌ی خدمات</h2><div class="grow"></div><small class="muted">مترمربع برای هر نفر · خط عمودی = معیار</small></div>
+          ${servRows(SERV.map(([lab, , norm, k], j) => [lab, a.serv[j].v, norm, k, a.serv[j].short ? `${fa(a.serv[j].short)} محله کمبود` : 'بدون کمبود']))}
+          <p class="lede" style="margin-top:auto;padding-top:10px">عدد، میانگین سرانه‌ی محلات است و خط آبی معیار شورای عالی. نوار قرمز یعنی میانگین زیر معیار است.</p></div>
+        <div class="card pad"><div class="h2"><h2>در معرض مخاطرات</h2><div class="grow"></div><small class="muted">${fa(Math.round(hazT))} هکتار</small></div>
+          <div class="hz">${HAZ.map(([lab, k], j) => `<div class="hr"><span>${lab}</span><div class="tr"><i style="width:${hazT ? a.haz[j] / Math.max(...a.haz) * 100 : 0}%;background:${grad(k)}"></i></div><b class="num">${fa(Math.round(a.haz[j]))}</b><small class="muted">${pct(a.haz[j] / a.area * 100)}</small></div>`).join('')}</div>
+          <div class="mini-h" style="margin-top:14px">اعتبار اقدامات<span class="grow"></span><small class="muted">${fa(budT)} میلیارد ریال</small></div>
+          ${stack(bud.map(([s, v, k]) => [s, v / budT * 100, k]), 16)}${keyRow(bud.map(([s, v, k]) => [s, v / budT * 100, k, fa(v)]))}</div>
+      </div>
+      <div class="card pad wcard"><div class="h2"><h2>محلاتی که بیشترین ابنیه‌ی ناپایدار را دارند</h2><div class="grow"></div><small class="muted">برای دیدن پرونده روی هر ردیف بزنید</small></div>
+        <div class="wtab">${worst.map(h => { const c = B.cityBy[h.city] || {}; return `<a class="wr" href="#d/hood/${h.id}"><span class="t"><b>محله ${h.n}</b><small>${c.n || ''} · ${TYPES.find(t => t[0] === h.type)[1]}</small></span>
+          ${stack(COND.map(([lab, k], j) => [lab, h.cond[j], k]), 10)}<b class="num neg">${pct(h.cond[2] + h.cond[3])}</b><small class="muted">${fa(h.unstable)} واحد</small></a>`; }).join('')}</div></div>`;
+  }
+
+  /* ---------- hood: side panel block ---------- */
+  function hoodPanel(h) {
+    return `<div><div class="mini-h">وضعیت ابنیه<span class="grow"></span><span class="tchip t-${h.type}">${TYPES.find(t => t[0] === h.type)[1]}</span></div>${stack(COND.map(([lab, k], j) => [lab, h.cond[j], k]), 12)}${keyRow(COND.map(([lab, k], j) => [lab, h.cond[j], k]))}</div>
+      <div><div class="mini-h">سرانه در برابر معیار<span class="grow"></span><small class="muted">م‌م برای هر نفر</small></div>${servRows(SERV.map(([lab, , , k], j) => [lab, h.serv[j].v, h.serv[j].norm, k]))}</div>`;
+  }
+
+  /* ---------- hood: detail page sections ---------- */
+  function hoodDetail(h) {
+    const T = TYPES.find(t => t[0] === h.type);
+    const acts = h.acts; const budT = acts.reduce((a, x) => a + x.budget, 0);
+    const stc = s => STAT.find(x => x[0] === s)[1];
+    return `
+      ${kpiStrip([['مساحت', fa(h.area), 'هکتار'], ['جمعیت', fa(h.pop), 'نفر'], ['خانوار', fa(h.hh)], ['واحد مسکونی', fa(h.units)], ['واحد ناپایدار', fa(h.unstable), pct(h.unstable / h.units * 100), 'bad'], ['واحد نوساز', fa(h.renewed), pct(h.renewed / h.units * 100), 'good'], ['تراکم جمعیت', fa(Math.round(h.pop / h.area)), 'نفر در هکتار']])}
+      <div class="rn-grid">
+        <div class="card pad"><div class="h2"><h2>وضعیت پایداری مسکن</h2><div class="grow"></div><span class="tchip t-${h.type}">${T[1]}</span></div>
+          <div class="donut-wrap"><div class="chart" id="dCond" style="height:200px"></div><div class="dl">${COND.map(([lab, k], j) => `<span><i style="background:${grad(k)}"></i>${lab}<b class="num">${pct(h.cond[j])}</b></span>`).join('')}</div></div></div>
+        <div class="card pad"><div class="h2"><h2>مقایسه‌ی سرانه‌ی خدمات</h2><div class="grow"></div><small class="muted">مترمربع برای هر نفر</small></div><div class="lgd2"><span><i style="background:${grad('teal')}"></i>محله</span><span><i style="background:${grad('blue')}"></i>میانگین شهر</span><span><i style="background:#F59F00;border-radius:50%"></i>معیار</span><span><i style="background:${grad('red')}"></i>زیر معیار</span></div><div class="chart" id="dServ" style="height:210px"></div></div>
+        <div class="card pad"><div class="h2"><h2>توزیع درآمد خانوارها</h2><div class="grow"></div><small class="muted">${fa(h.hh)} خانوار</small></div>
+          ${stack(INC.map(([lab, k], j) => [lab, h.inc[j], k]), 16)}<div class="hz" style="margin-top:12px">${INC.map(([lab, k], j) => `<div class="hr"><span>${lab}</span><div class="tr"><i style="width:${h.inc[j] / Math.max(...h.inc) * 100}%;background:${grad(k)}"></i></div><b class="num">${pct(h.inc[j])}</b><small class="muted">${fa(Math.round(h.hh * h.inc[j] / 100))}</small></div>`).join('')}</div>
+          <div class="mini-h" style="margin-top:14px">در معرض مخاطرات<span class="grow"></span><small class="muted">درصد مساحت محله</small></div>
+          <div class="hz">${HAZ.map(([lab, k], j) => `<div class="hr"><span>${lab}</span><div class="tr"><i style="width:${Math.max(2, h.haz[j] / 35 * 100)}%;background:${grad(k)}"></i></div><b class="num">${pct(h.haz[j])}</b><small class="muted">${fa(Math.round(h.area * h.haz[j] / 100))} هکتار</small></div>`).join('')}</div></div>
+      </div>
+      <div class="grid g-12">
+        <div class="card pad"><div class="h2"><h2>اولویت رویکرد مداخله</h2></div><div class="prio">${h.prio.map((p, i) => `<div class="pi"><span class="pn">${fa(i + 1)}</span><b>${p}</b></div>`).join('')}</div>
+          <div class="mini-h" style="margin-top:16px">ظرفیت نوسازی</div><div class="cap"><b class="num">${fa(h.capacity)}</b><span>واحد از ${fa(h.unstable)} واحد ناپایدار</span></div>${stack([['ظرفیت', h.capacity / h.unstable * 100, 'teal'], ['باقی', 100 - h.capacity / h.unstable * 100, 'slate']], 10)}</div>
+        <div class="card pad"><div class="h2"><h2>اقدامات و پروژه‌های جاری</h2><div class="grow"></div><small class="muted">${fa(acts.length)} اقدام · ${fa(budT)} میلیارد ریال</small></div>
+          <div class="atab"><div class="ah"><span>اقدام</span><span>موقعیت</span><span>زمان‌بندی</span><span>اعتبار</span><span>وضعیت</span></div>
+          ${acts.map(a => `<div class="ar"><b>${a.n}</b><span>${a.at}</span><span class="num">${fa(a.from)}–${fa(a.to)}</span><span class="num">${fa(a.budget)}</span><span><span class="sbadge" style="--g:${grad(stc(a.st))};--c:${solid(stc(a.st))}">${a.st}</span></span></div>`).join('')}</div></div>
+      </div>`;
+  }
+  function hoodDetailCharts(h) {
+    const ech = window.echarts; const lg = (k) => new ech.graphic.LinearGradient(0, 0, 1, 1, [{ offset: 0, color: G[k][0] }, { offset: 1, color: G[k][1] }]);
+    const lgv = (k) => new ech.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: G[k][0] }, { offset: 1, color: G[k][1] }]);
+    U.chart(U.$('#dCond'), { tooltip: { trigger: 'item', valueFormatter: v => pct(v) }, series: [{ type: 'pie', radius: ['58%', '86%'], padAngle: 2, itemStyle: { borderRadius: 6 }, label: { show: true, position: 'center', formatter: () => `${pct(h.cond[2] + h.cond[3])}\nناپایدار`, fontFamily: 'Vazirmatn', fontSize: 15, fontWeight: 800, color: '#1C2B45', lineHeight: 22 },
+      data: COND.map(([lab, k], j) => ({ name: lab, value: Math.round(h.cond[j] * 10) / 10, itemStyle: { color: lg(k) } })) }] });
+    U.chart(U.$('#dServ'), { grid: { left: 8, right: 8, top: 14, bottom: 8, containLabel: true }, tooltip: { trigger: 'axis', valueFormatter: v => fa(v) },
+      legend: { show: false },
+      xAxis: { type: 'category', inverse: true, data: SERV.map(s => s[0]), axisTick: { show: false }, axisLine: { lineStyle: { color: '#E2E8F0' } }, axisLabel: { color: '#3B4A63', fontFamily: 'Vazirmatn' } },
+      yAxis: { type: 'value', splitLine: { lineStyle: { color: '#EEF2F6' } }, axisLabel: { color: '#94A3B8', formatter: v => fa(v) } },
+      series: [
+        { name: 'محله', type: 'bar', barWidth: 14, itemStyle: { borderRadius: [5, 5, 0, 0], color: p => lgv(h.serv[p.dataIndex].v < h.serv[p.dataIndex].norm ? 'red' : 'teal') }, data: h.serv.map(s => s.v) },
+        { name: 'میانگین شهر', type: 'bar', barWidth: 14, itemStyle: { borderRadius: [5, 5, 0, 0], color: lgv('blue') }, data: h.serv.map(s => s.city) },
+        { name: 'معیار', type: 'line', symbol: 'circle', symbolSize: 7, lineStyle: { width: 0 }, itemStyle: { color: '#F59F00', borderColor: '#fff', borderWidth: 2 }, data: h.serv.map(s => s.norm) }] });
+  }
+
+  /* ---------- registration status card (fills the space under the 30-day rhythm) ---------- */
+  function formStatusCard() {
+    const H = B.D.hoods; const S = [['تأیید شده', 'teal'], ['در انتظار تأیید', 'blue'], ['برگشت برای اصلاح', 'red'], ['پیش‌نویس', 'slate']];
+    const c = S.map(([s]) => H.filter(h => h.status === s).length); const old = [...H].filter(h => h.status === 'پیش‌نویس').sort((a, b) => a.updated - b.updated)[0];
+    const avg = H.reduce((a, h) => a + h.steps, 0) / H.length;
+    return `<section class="card pad fsc"><div class="h2"><h2>وضعیت فرم‌های محله</h2><div class="grow"></div><small class="muted">${fa(H.length)} محله</small></div>
+      ${stack(S.map(([s, k], j) => [s, c[j], k]), 14)}${keyRow(S.map(([s, k], j) => [s, c[j], k, fa(c[j])]))}
+      <div class="fsn"><div><b class="num">${fa(Math.round(avg * 10) / 10)}</b><small>میانگین مرحله از ۶</small></div><div><b class="num">${pct(c[0] / H.length * 100)}</b><small>نرخ تأیید نهایی</small></div><div><b class="num">${old ? U.rel(old.updated) : '—'}</b><small>قدیمی‌ترین پیش‌نویس</small></div></div></section>`;
+  }
+
+  Object.assign(U, { renewSection, hoodPanel, hoodDetail, hoodDetailCharts, formStatusCard, grad, RENEW: { TYPES, COND, SERV, HAZ, agg } });
+})();
 </script><script>/* MODEL A · نقشه — one stage, two views (2D drill-down / tilted 3D with time); the side panel follows the level or the clicked item. */
 (function () {
   'use strict';
@@ -1568,6 +1807,7 @@ window.D={"prov":{"Tehran":{"fa":"تهران","hoods":46,"cities":9,"props":1193
   let metric = 'records';
 
   const ll = c => [c[0], c[1]];
+  const fit = (b, o) => { map.stop(); if (map._animatingZoom) map.fitBounds(b, Object.assign({}, o, { animate: false })); else map.fitBounds(b, o); };
   const PAD = mz => Object.assign(innerWidth < 760 ? { padding: [16, 16] } : { paddingTopLeft: [60, 70], paddingBottomRight: [400, 110] }, mz ? { maxZoom: mz } : {});
   const boundsOf = pts => L.latLngBounds(pts.map(ll));
 
@@ -1593,12 +1833,15 @@ window.D={"prov":{"Tehran":{"fa":"تهران","hoods":46,"cities":9,"props":1193
         <div class="float viewsw" role="tablist" aria-label="نوع نمایش"><button role="tab" data-v="2d" class="on">${ic('map', 'sm')} نقشه</button><button role="tab" data-v="sat">${ic('sat', 'sm')} ماهواره</button><button role="tab" data-v="3d">${ic('chart', 'sm')} سه‌بعدی و زمان</button><button role="tab" data-v="atlas">${ic('grid', 'sm')} اطلس استان‌ها</button></div>
       </section>
 
-      <div class="sec-title" style="margin-top:28px"><span class="n">۲</span><h2>کارشناسان چه کرده‌اند؟</h2><p>بازه‌ی یک ماه اخیر</p></div>
-      <div class="grid g-21">${U.expertsCard(6)}${U.rhythmCard()}</div>
+      <div class="sec-title" style="margin-top:28px"><span class="n">۲</span><h2>وضعیت محلات هدف</h2><p id="renewScope">همراه نقشه عوض می‌شود</p></div>
+      <div id="renew" class="renew"></div>
 
-      <div class="sec-title" style="margin-top:28px"><span class="n">۳</span><h2>پروژه‌ها و کارهای منتظر شما</h2><p>پیشرفت واقعی در برابر برنامه، و صف تأیید</p></div>
+      <div class="sec-title" style="margin-top:28px"><span class="n">۳</span><h2>کارشناسان چه کرده‌اند؟</h2><p>بازه‌ی یک ماه اخیر</p></div>
+      <div class="grid g-21 xgrid">${U.expertsCard(6)}<div class="stackcol">${U.rhythmCard()}${U.formStatusCard()}</div></div>
+
+      <div class="sec-title" style="margin-top:28px"><span class="n">۴</span><h2>پروژه‌ها و کارهای منتظر شما</h2><p>پیشرفت واقعی در برابر برنامه، و صف تأیید</p></div>
       <div class="grid g2">
-        <div class="card pad"><div class="h2"><h2>پیشرفت پروژه‌ها</h2><div class="grow"></div><span class="muted" style="font-size:12px">خط سیاه = جایی که باید باشد</span></div>${U.bullets(B.projects.slice(0, 6))}</div>
+        <div class="card pad"><div class="h2"><h2>پیشرفت پروژه‌ها</h2><div class="grow"></div><span class="muted" style="font-size:12px">خط آبی = جایی که باید باشد</span></div>${U.bullets(B.projects.slice(0, 6))}</div>
         <div class="card pad"><div class="h2"><h2>منتظر تأیید شما</h2><div class="grow"></div><span class="badge wait">${fa(B.queue.length)} مورد</span></div>
           <div class="list">${B.queue.slice(0, 6).map(q => `<a class="row" href="#d/hood/${q.ref}">${U.av(q.x)}<span class="t"><b>${q.n}</b><small>${q.x.n} · ${q.city}</small></span><span style="width:84px">${U.steps(q.steps)}<small class="muted">${fa(q.age)} روز در صف</small></span></a>`).join('')}</div></div>
       </div>
@@ -1635,26 +1878,26 @@ window.D={"prov":{"Tehran":{"fa":"تهران","hoods":46,"cities":9,"props":1193
     else if (s.lv === 2) drawCity(s.id, keepView);
     else if (s.lv === 3) drawRegion(s.id, keepView);
     else drawHood(s.id, keepView);
-    panel(); legend(); if (view === '3d') draw3d(); if (view === 'atlas') drawAtlas();
+    panel(); legend(); renew(); if (view === '3d') draw3d(); if (view === 'atlas') drawAtlas();
   }
 
   function drawCountry(keep) {
     const gj = L.geoJSON(B.GI, {
       style: f => { const p = B.provBy[f.properties.en]; const c = provColor(p); return { color: '#fff', weight: 1.2, fillColor: c || '#E2E8F0', fillOpacity: 1, className: c ? '' : 'nodata' }; },
       onEachFeature: (f, l) => { const p = B.provBy[f.properties.en];
-        l.on('mousemove', e => { l.setStyle({ weight: 2.5, color: '#0F172A' }); U.tip(e.originalEvent, `<b>${p.fa}</b><br>${p.has ? `${fa(p.records)} رکورد · ${pct(p.completeness)} کامل<br>${fa(p.pending)} مورد منتظر تأیید` : 'هنوز داده‌ای ثبت نشده'}`); });
+        l.on('mousemove', e => { l.setStyle({ weight: 2.5, color: '#3B5BDB' }); U.tip(e.originalEvent, `<b>${p.fa}</b><br>${p.has ? `${fa(p.records)} رکورد · ${pct(p.completeness)} کامل<br>${fa(p.pending)} مورد منتظر تأیید` : 'هنوز داده‌ای ثبت نشده'}`); });
         l.on('mouseout', () => { l.setStyle({ weight: 1.2, color: '#fff' }); U.tip(null); });
         l.on('click', () => go({ lv: 1, id: p.id })); }
     }).addTo(shapes);
     B.provs.forEach(p => { const c = U.centroid(U.biggest(p.feature)); if (p.has) label([c[1], c[0]], p.short, p.has ? (metric === 'completeness' ? pct(p.completeness) : fa(p[metric])) : null); });
-    if (!keep) map.fitBounds(gj.getBounds(), PAD());
+    if (!keep) fit(gj.getBounds(), PAD());
   }
   function fadeOthers(exceptEn) {
     L.geoJSON(B.GI, { style: f => ({ color: '#fff', weight: 1, fillColor: f.properties.en === exceptEn ? '#FFFFFF' : '#E9EEF3', fillOpacity: 1 }), onEachFeature: (f, l) => { if (f.properties.en !== exceptEn) l.on('click', () => go({ lv: 1, id: f.properties.en })); } }).addTo(shapes);
   }
   function drawProv(id, keep) {
     const p = B.provBy[id]; fadeOthers(id);
-    const outline = L.geoJSON(p.feature, { style: { color: '#0F172A', weight: 2, fill: false }, interactive: false }).addTo(shapes);
+    const outline = L.geoJSON(p.feature, { style: { color: '#3B5BDB', weight: 2, fill: false }, interactive: false }).addTo(shapes);
     const cities = B.D.cities.filter(c => c.p === id);
     const mx = Math.max(1, ...cities.map(c => c.hoods));
     cities.forEach(c => {
@@ -1664,7 +1907,7 @@ window.D={"prov":{"Tehran":{"fa":"تهران","hoods":46,"cities":9,"props":1193
       L.circleMarker(ll(c.c), { radius: 6 + Math.sqrt(c.hoods) * 3.2, color: '#fff', weight: 2, fillColor: C.hood, fillOpacity: .9 }).on('click', () => go({ lv: 2, id: c.id })).on('mousemove', e => U.tip(e.originalEvent, `<b>شهر ${c.n}</b><br>${fa(c.regions)} منطقه · ${fa(c.hoods)} محله · ${fa(c.props)} ملک`)).on('mouseout', () => U.tip(null)).addTo(shapes);
       label(ll(c.c), c.n, fa(c.hoods) + ' محله');
     });
-    if (!keep) map.fitBounds(outline.getBounds(), PAD());
+    if (!keep) fit(outline.getBounds(), PAD());
   }
   function drawPoints(hoodIds) {
     const hs = new Set(hoodIds);
@@ -1680,40 +1923,40 @@ window.D={"prov":{"Tehran":{"fa":"تهران","hoods":46,"cities":9,"props":1193
     sel = { kind, it }; U.tip(null);
     if (selLayer) { shapes.removeLayer(selLayer); selLayer = null; }
     const pos = it.c ? ll(it.c) : it.l ? ll(it.l[Math.floor(it.l.length / 2)]) : L.polygon(it.b.map(ll)).getBounds().getCenter();
-    selLayer = L.circleMarker(pos, { radius: 14, color: '#0F172A', weight: 2, fill: false, interactive: false }).addTo(shapes);
+    selLayer = L.circleMarker(pos, { radius: 14, color: '#3B5BDB', weight: 2, fill: false, interactive: false }).addTo(shapes);
     panel();
   }
   function drawCity(id, keep) {
     const c = B.cityBy[id]; fadeOthers('_');
-    const outline = L.polygon(c.b.map(ll), { color: '#0F172A', weight: 2, fillColor: '#fff', fillOpacity: 1 }).addTo(shapes);
+    const outline = L.polygon(c.b.map(ll), { color: '#3B5BDB', weight: 2, fillColor: '#fff', fillOpacity: 1 }).addTo(shapes);
     const regs = B.D.regions.filter(r => r.city === id);
     regs.forEach(r => { const hs = B.D.hoods.filter(h => h.reg === r.id); const pg = L.polygon(r.b.map(ll), { color: '#94A3B8', weight: 1, fillColor: hs.length ? U.ramp(Math.min(.99, hs.length / 5)) : '#F8FAFC', fillOpacity: .55 }).addTo(shapes);
       pg.on('click', () => go({ lv: 3, id: r.id })); pg.on('mousemove', e => U.tip(e.originalEvent, `<b>${r.n}</b><br>${fa(hs.length)} محله ثبت‌شده`)); pg.on('mouseout', () => U.tip(null));
       label(ll(r.c), r.n, null); });
     const hoods = B.D.hoods.filter(h => h.city === id);
-    hoods.forEach(h => L.polygon(h.b.map(ll), { color: '#0F172A', weight: 1, fillOpacity: 0, dashArray: '3 3' }).on('click', () => go({ lv: 4, id: h.id })).addTo(shapes));
+    hoods.forEach(h => L.polygon(h.b.map(ll), { color: '#3B5BDB', weight: 1, fillOpacity: 0, dashArray: '3 3' }).on('click', () => go({ lv: 4, id: h.id })).addTo(shapes));
     drawPoints(hoods.map(h => h.id));
-    if (!keep) map.fitBounds(outline.getBounds(), PAD());
+    if (!keep) fit(outline.getBounds(), PAD());
   }
   function drawRegion(id, keep) {
     const r = B.regionBy[id], c = B.cityBy[r.city]; fadeOthers('_');
     L.polygon(c.b.map(ll), { color: '#CBD5E1', weight: 1, fillColor: '#fff', fillOpacity: 1, interactive: false }).addTo(shapes);
-    const outline = L.polygon(r.b.map(ll), { color: '#0F172A', weight: 2, fillColor: '#F8FAFC', fillOpacity: 1 }).addTo(shapes);
+    const outline = L.polygon(r.b.map(ll), { color: '#3B5BDB', weight: 2, fillColor: '#F8FAFC', fillOpacity: 1 }).addTo(shapes);
     const hoods = B.D.hoods.filter(h => h.reg === id);
     hoods.forEach(h => { const col = h.status === 'تأیید شده' ? C.hood : h.status === 'در انتظار تأیید' ? '#91A7FF' : h.status === 'برگشت برای اصلاح' ? '#FFC9C9' : '#E2E8F0';
       const pg = L.polygon(h.b.map(ll), { color: '#fff', weight: 1.5, fillColor: col, fillOpacity: .85 }).addTo(shapes);
       pg.on('click', () => go({ lv: 4, id: h.id })); pg.on('mousemove', e => U.tip(e.originalEvent, `<b>محله ${h.n}</b><br>${h.status} · مرحله ${fa(h.steps)} از ۶`)); pg.on('mouseout', () => U.tip(null));
       label(ll(h.c), h.n, null); });
     drawPoints(hoods.map(h => h.id));
-    if (!keep) map.fitBounds(outline.getBounds(), PAD());
+    if (!keep) fit(outline.getBounds(), PAD());
   }
   function drawHood(id, keep) {
     const h = B.hoodBy[id]; fadeOthers('_');
     const sib = B.D.hoods.filter(x => x.reg === h.reg && x.id !== id);
     sib.forEach(x => L.polygon(x.b.map(ll), { color: '#CBD5E1', weight: 1, fillColor: '#F8FAFC', fillOpacity: 1 }).on('click', () => go({ lv: 4, id: x.id })).addTo(shapes));
-    const outline = L.polygon(h.b.map(ll), { color: '#0F172A', weight: 2.5, fillColor: '#F1F5F9', fillOpacity: .7 }).addTo(shapes);
+    const outline = L.polygon(h.b.map(ll), { color: '#1E40AF', weight: 2.5, fillColor: '#F1F5F9', fillOpacity: .7 }).addTo(shapes);
     drawPoints([id]);
-    if (!keep) map.fitBounds(outline.getBounds(), PAD(16));
+    if (!keep) fit(outline.getBounds(), PAD(16));
   }
 
   function chain() {
@@ -1753,7 +1996,7 @@ window.D={"prov":{"Tehran":{"fa":"تهران","hoods":46,"cities":9,"props":1193
       extra = `<div style="display:flex;gap:10px;flex-wrap:wrap;font-size:11.5px" class="muted">${[[C.hood, 'تأیید شده'], ['#91A7FF', 'منتظر تأیید'], ['#FFC9C9', 'برگشت‌خورده'], ['#E2E8F0', 'پیش‌نویس']].map(([c, t]) => `<span><i style="display:inline-block;width:9px;height:9px;border-radius:3px;background:${c};margin-inline-end:4px"></i>${t}</span>`).join('')}</div>`;
     } else {
       const h = B.hoodBy[st.id]; title = 'محله ' + h.n; prov = B.provBy[B.cityBy[h.city].p];
-      cells = [['معبر', h.streets], ['ملک', h.props], ['عارضه', h.feats], ['ساکنان', h.pop], ['بلوک', h.blk || 0], ['پروژه', B.projects.filter(p => p.h === h.id).length]];
+      cells = [['ساکنان', h.pop], ['خانوار', h.hh], ['واحد مسکونی', h.units], ['معبر', h.streets], ['ملک', h.props], ['عارضه', h.feats]];
       comp = h.steps / 6 * 100;
       extra = `<div><div class="mini-h">فرم محله ${U.statusBadge(h.status)}<span class="grow"></span><small class="muted">مرحله ${fa(h.steps)} از ۶</small></div>${U.steps(h.steps)}<small class="muted">${B.STEP_NAMES[Math.min(5, h.steps)]}${h.steps < 6 ? ' هنوز کامل نشده' : ' انجام شد'}</small></div>`;
       kids = B.D.streets.filter(s => s.h === h.id).map(s => ({ n: s.n, s: s.s, v: null, go: () => location.hash = '#d/hood/' + h.id }));
@@ -1767,12 +2010,23 @@ window.D={"prov":{"Tehran":{"fa":"تهران","hoods":46,"cities":9,"props":1193
         <div class="ladder">${cells.map(([l, v, suf]) => `<div class="cell ${v ? '' : 'dim'}"><b class="num">${fa(v)}${suf || ''}</b><small>${l}</small></div>`).join('')}</div>
         <div><div class="mini-h">کامل‌بودن اطلاعات<span class="grow"></span><b>${pct(comp)}</b></div><div class="bar"><i style="width:${comp}%"></i></div></div>
         ${extra}
+        ${st.lv === 4 ? U.hoodPanel(B.hoodBy[st.id]) : ''}
         <div><div class="mini-h">نیاز به پیگیری</div>${U.attention(3, st.lv === 0 ? null : (prov && prov.id))}</div>
         ${kids.length ? `<div><div class="mini-h">${st.lv === 4 ? 'معابر این محله' : CHILD[st.lv] + '‌ها'}<span class="grow"></span><small class="muted">${fa(kids.length)}</small></div><div class="list">${kids.map((k, i) => `<button class="row" data-k="${i}"><span class="t"><b>${k.n}</b><small>${k.s}</small></span>${k.v != null ? `<span style="width:70px"><div class="bar"><i style="width:${k.v / mx * 100}%"></i></div></span><b class="num" style="width:44px;text-align:left;font-size:12.5px">${k.vs || fa(k.v)}</b>` : ''}</button>`).join('')}</div></div>` : ''}`}
         <div style="display:flex;gap:8px;margin-top:auto">${detail ? `<a class="btn pri" href="${detail}" style="flex:1">${ic('eye', 'sm')} صفحه‌ی کامل ${title}</a>` : ''}${st.lv < 4 && !empty ? `<button class="btn ghost" onclick="UI.toast('فرم «ایجاد ${CHILD[st.lv]}» باز می‌شود')" style="${detail ? '' : 'flex:1'}">${ic('plus', 'sm')} تعریف ${CHILD[st.lv]}</button>` : ''}</div>
       </div>`;
     U.$$('#ctx .crumb button').forEach(b => b.onclick = () => go(ch[+b.dataset.i]));
     U.$$('#ctx [data-k]').forEach(b => b.onclick = () => kids[+b.dataset.k].go());
+  }
+  function renew() {
+    const el = U.$('#renew'); if (!el) return;
+    let hs = B.D.hoods, name = 'کل کشور';
+    if (st.lv === 1) { hs = hs.filter(h => (B.cityBy[h.city] || {}).p === st.id); name = 'استان ' + B.provBy[st.id].fa; }
+    else if (st.lv === 2) { hs = hs.filter(h => h.city === st.id); name = 'شهر ' + B.cityBy[st.id].n; }
+    else if (st.lv === 3) { hs = hs.filter(h => h.reg === st.id); name = B.regionBy[st.id].n + ' ' + B.cityBy[B.regionBy[st.id].city].n; }
+    else if (st.lv === 4) { hs = [B.hoodBy[st.id]]; name = 'محله ' + B.hoodBy[st.id].n; }
+    U.$('#renewScope').textContent = `${name} · همراه نقشه عوض می‌شود`;
+    el.innerHTML = U.renewSection(hs, name);
   }
   function itemPanel() {
     const ch = chain();
@@ -1792,7 +2046,7 @@ window.D={"prov":{"Tehran":{"fa":"تهران","hoods":46,"cities":9,"props":1193
     if (v === 'atlas') drawAtlas();
     U.$$('.viewsw button').forEach(b => { b.classList.toggle('on', b.dataset.v === v); b.setAttribute('aria-selected', b.dataset.v === v); });
     U.$('#hint').style.display = v === '3d' || v === 'atlas' ? 'none' : (st.lv === 0 ? '' : 'none');
-    if (v === '3d') draw3d(); else { stop(); setTimeout(() => map.invalidateSize(), 50); }
+    if (v === '3d') draw3d(); else { stop(); setTimeout(() => { map.invalidateSize(); if (v !== 'atlas') go(st); }, 60); }
   }
 
   /* ---------- 3D (tilted extrusion) ---------- */
@@ -1895,13 +2149,13 @@ window.D={"prov":{"Tehran":{"fa":"تهران","hoods":46,"cities":9,"props":1193
       ${B.provs.map(p => { const [c, r] = p.grid; const X = c * (S + G), y = r * (S + G);
         const t = p.has ? (p[key] - mn) / ((mx - mn) || 1) : 0; const fill = p.has ? U.ramp(t * .999) : 'url(#hatchA)'; const ink = p.has ? U.inkOn(fill) : '#94A3B8';
         return `<g class="atile ${p.id === selId ? 'sel' : ''}" data-id="${p.id}" tabindex="0" role="button" aria-label="${p.fa}">
-          <rect x="${X}" y="${y}" width="${S}" height="${S}" rx="14" fill="${fill}" stroke="${p.id === selId ? '#0F172A' : p.has ? 'none' : '#E2E8F0'}" stroke-width="${p.id === selId ? 3 : 1}"/>
+          <rect x="${X}" y="${y}" width="${S}" height="${S}" rx="14" fill="${fill}" stroke="${p.id === selId ? '#1E40AF' : p.has ? 'none' : '#E2E8F0'}" stroke-width="${p.id === selId ? 3 : 1}"/>
           <text x="${X + S - 10}" y="${y + 22}" direction="rtl" font-size="12" font-weight="700" fill="${ink}">${esc(p.short)}</text>
           ${p.has ? `<text x="${X + S - 10}" y="${y + 56}" direction="rtl" font-size="20" font-weight="800" fill="${ink}">${key === 'completeness' ? pct(p[key]) : fa(p[key])}</text>
-          <rect x="${X + 10}" y="${y + S - 18}" width="${S - 20}" height="5" rx="2.5" fill="${ink === '#fff' ? 'rgba(255,255,255,.3)' : 'rgba(15,23,42,.08)'}"/><rect x="${X + 10 + (S - 20) * (1 - p.completeness / 100)}" y="${y + S - 18}" width="${(S - 20) * p.completeness / 100}" height="5" rx="2.5" fill="${ink === '#fff' ? '#fff' : '#0F172A'}"/>`
+          <rect x="${X + 10}" y="${y + S - 18}" width="${S - 20}" height="5" rx="2.5" fill="${ink === '#fff' ? 'rgba(255,255,255,.3)' : 'rgba(15,23,42,.08)'}"/><rect x="${X + 10 + (S - 20) * (1 - p.completeness / 100)}" y="${y + S - 18}" width="${(S - 20) * p.completeness / 100}" height="5" rx="2.5" fill="${ink === '#fff' ? '#fff' : '#1E40AF'}"/>`
           : `<text x="${X + S - 10}" y="${y + 56}" direction="rtl" font-size="11.5" fill="#94A3B8">بدون داده</text>`}
           ${p.pending ? `<circle cx="${X + 15}" cy="${y + 17}" r="9" fill="#3B5BDB"/><text x="${X + 15}" y="${y + 21}" text-anchor="middle" font-size="10.5" font-weight="700" fill="#fff">${fa(p.pending)}</text>` : ''}</g>`; }).join('')}</svg>
-      <div class="atl-key"><span><i style="background:#0F172A;width:16px;height:4px"></i>نوار پایین: کامل‌بودن</span><span><i style="background:#3B5BDB;border-radius:50%"></i>منتظر تأیید</span><span><i class="empty-hatch"></i>بدون داده</span><span>غرب در چپ، شرق در راست</span></div>`;
+      <div class="atl-key"><span><i style="background:#1E40AF;width:16px;height:4px"></i>نوار پایین: کامل‌بودن</span><span><i style="background:#3B5BDB;border-radius:50%"></i>منتظر تأیید</span><span><i class="empty-hatch"></i>بدون داده</span><span>غرب در چپ، شرق در راست</span></div>`;
     U.$$('#atl .atile').forEach(g => { const p = B.provBy[g.dataset.id];
       g.onclick = () => { U.tip(null); go({ lv: 1, id: p.id }); };
       g.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); g.onclick(); } };
@@ -1929,7 +2183,7 @@ window.D={"prov":{"Tehran":{"fa":"تهران","hoods":46,"cities":9,"props":1193
           <div class="kstrip">${[['شهر', T.cities], ['محله', T.hoods], ['معبر', T.streets], ['ملک و اراضی', T.props], ['پروژه', T.exec + T.partner]].map(([l, v]) => `<div class="k"><span class="v num">${fa(v)}</span><span class="l">${l}</span></div>`).join('')}</div></div>
         <div class="card pad"><div class="h2"><h2>از استان تا معبر</h2><div class="grow"></div><span class="muted" style="font-size:12px">تعداد · درصد کامل‌بودن</span></div>
           <p class="lede" style="margin-bottom:10px">هر سطح باید پیش از سطح پایین‌تر کامل شود. شکاف‌ها این‌جا پیداست.</p>
-          <div class="stair">${[['استان', T.provsWith, 100, '/۳۱'], ['شهر', T.cities, 88], ['منطقه', T.regions, 74], ['محله', T.hoods, Math.round(B.D.hoods.reduce((a, h) => a + h.steps, 0) / B.D.hoods.length / 6 * 100)], ['معبر', T.streets, 57], ['نقاط و محدوده‌ها', T.feats + T.props, 49]].map(([l, v, c, s]) => `<div class="st"><span>${l}</span><div class="bar"><i style="width:${c}%;background:${c < 55 ? '#F59F00' : U.CAT.hood}"></i></div><b class="num">${fa(v)}${s || ''}</b></div>`).join('')}</div>
+          <div class="stair">${[['استان', T.provsWith, 100, '/۳۱'], ['شهر', T.cities, 88], ['منطقه', T.regions, 74], ['محله', T.hoods, Math.round(B.D.hoods.reduce((a, h) => a + h.steps, 0) / B.D.hoods.length / 6 * 100)], ['معبر', T.streets, 57], ['نقاط و محدوده‌ها', T.feats + T.props, 49]].map(([l, v, c, s]) => `<div class="st"><span>${l}</span><div class="bar"><i style="width:${c}%;background:${c < 55 ? 'linear-gradient(270deg,#FFE08A,#F59F00)' : 'linear-gradient(270deg,#63D3D1,#0CA5A3)'}"></i></div><b class="num">${fa(v)}${s || ''}</b></div>`).join('')}</div>
         </div>
       </section>
 
@@ -1965,12 +2219,12 @@ window.D={"prov":{"Tehran":{"fa":"تهران","hoods":46,"cities":9,"props":1193
           <rect class="bg" x="${X}" y="${y}" width="${S}" height="${S}" rx="16" fill="${fill}" stroke="${p.has ? 'none' : '#E2E8F0'}"/>
           <text x="${X + S - 12}" y="${y + 24}" text-anchor="start" direction="rtl" font-size="12.5" font-weight="700" fill="${ink}">${esc(p.short)}</text>
           ${p.has ? `<text x="${X + S - 12}" y="${y + 60}" direction="rtl" font-size="22" font-weight="800" fill="${ink}">${fmtM(p, metric)}</text>
-          <rect x="${X + 12}" y="${y + S - 20}" width="${S - 24}" height="5" rx="2.5" fill="${ink === '#fff' ? 'rgba(255,255,255,.3)' : 'rgba(15,23,42,.08)'}"/><rect x="${X + 12 + (S - 24) * (1 - p.completeness / 100)}" y="${y + S - 20}" width="${(S - 24) * p.completeness / 100}" height="5" rx="2.5" fill="${ink === '#fff' ? '#fff' : '#0F172A'}"/>`
+          <rect x="${X + 12}" y="${y + S - 20}" width="${S - 24}" height="5" rx="2.5" fill="${ink === '#fff' ? 'rgba(255,255,255,.3)' : 'rgba(15,23,42,.08)'}"/><rect x="${X + 12 + (S - 24) * (1 - p.completeness / 100)}" y="${y + S - 20}" width="${(S - 24) * p.completeness / 100}" height="5" rx="2.5" fill="${ink === '#fff' ? '#fff' : '#1E40AF'}"/>`
           : `<text x="${X + S - 12}" y="${y + 60}" direction="rtl" font-size="12" fill="#94A3B8">بدون داده</text>`}
           ${p.pending && metric !== 'pending' ? `<circle cx="${X + 16}" cy="${y + 18}" r="9" fill="#3B5BDB"/><text x="${X + 16}" y="${y + 22}" text-anchor="middle" font-size="10.5" font-weight="700" fill="#fff">${fa(p.pending)}</text>` : ''}
         </g>`; }).join('')}
     </svg>
-    <div style="display:flex;gap:16px;align-items:center;margin-top:12px;font-size:12px;color:var(--muted);flex-wrap:wrap"><span style="display:flex;align-items:center;gap:6px"><i style="width:18px;height:5px;border-radius:3px;background:#0F172A;display:inline-block"></i>نوار پایین هر خانه: کامل‌بودن داده</span><span style="display:flex;align-items:center;gap:6px"><i style="width:12px;height:12px;border-radius:50%;background:#3B5BDB;display:inline-block"></i>تعداد منتظر تأیید</span><span>چیدمان خانه‌ها تقریباً جای جغرافیایی استان‌هاست؛ غرب در چپ.</span></div>`;
+    <div style="display:flex;gap:16px;align-items:center;margin-top:12px;font-size:12px;color:var(--muted);flex-wrap:wrap"><span style="display:flex;align-items:center;gap:6px"><i style="width:18px;height:5px;border-radius:3px;background:#1E40AF;display:inline-block"></i>نوار پایین هر خانه: کامل‌بودن داده</span><span style="display:flex;align-items:center;gap:6px"><i style="width:12px;height:12px;border-radius:50%;background:#3B5BDB;display:inline-block"></i>تعداد منتظر تأیید</span><span>چیدمان خانه‌ها تقریباً جای جغرافیایی استان‌هاست؛ غرب در چپ.</span></div>`;
     U.$('#tiles').innerHTML = svg;
     U.$$('#tiles .tile').forEach(g => { const p = B.provBy[g.dataset.id];
       g.onclick = () => { sel = p.id; U.$$('#tiles .tile').forEach(x => x.classList.toggle('sel', x === g)); profile(); };
@@ -1982,7 +2236,7 @@ window.D={"prov":{"Tehran":{"fa":"تهران","hoods":46,"cities":9,"props":1193
   function shapeSvg(p) {
     const rings = U.ringsOf(p.feature); const bb = U.bboxOf(rings.flat()); const s = 64 / Math.max(bb[2] - bb[0], bb[3] - bb[1]);
     const d = rings.map(r => 'M' + r.map(([x, y]) => `${((x - bb[0]) * s + 4).toFixed(1)},${((bb[3] - y) * s + 4).toFixed(1)}`).join('L') + 'Z').join('');
-    return `<svg viewBox="0 0 72 72" aria-hidden="true"><path d="${d}" fill="${p.has ? '#0F172A' : '#CBD5E1'}" stroke="#fff" stroke-width="1"/></svg>`;
+    return `<svg viewBox="0 0 72 72" aria-hidden="true"><path d="${d}" fill="${p.has ? '#1E40AF' : '#CBD5E1'}" stroke="#fff" stroke-width="1"/></svg>`;
   }
   function profile() {
     const p = B.provBy[sel]; const rank = [...B.provs].sort((a, b) => b.records - a.records).indexOf(p) + 1;
@@ -2013,7 +2267,7 @@ window.D={"prov":{"Tehran":{"fa":"تهران","hoods":46,"cities":9,"props":1193
         xAxis: { type: 'category', inverse: true, boundaryGap: false, data: B.MONTHS, axisLine: { show: false }, axisTick: { show: false }, axisLabel: { color: '#94A3B8', fontSize: 10, interval: 1 } }, yAxis: { show: false },
         series: [{ type: 'line', smooth: .35, data: p.monthly, symbol: 'circle', symbolSize: 6, showSymbol: false, lineStyle: { color: C.prop, width: 2 }, itemStyle: { color: C.prop },
           areaStyle: { color: { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: 'rgba(59,91,219,.18)' }, { offset: 1, color: 'rgba(59,91,219,0)' }] } },
-          markPoint: { symbol: 'circle', symbolSize: 8, label: { show: true, position: 'top', formatter: o => fa(o.value), color: '#0F172A', fontWeight: 700, fontFamily: 'Vazirmatn' }, itemStyle: { color: C.prop }, data: [{ coord: [7, p.monthly[7]], value: p.monthly[7] }] } }] }); };
+          markPoint: { symbol: 'circle', symbolSize: 8, label: { show: true, position: 'top', formatter: o => fa(o.value), color: '#3B5BDB', fontWeight: 700, fontFamily: 'Vazirmatn' }, itemStyle: { color: C.prop }, data: [{ coord: [7, p.monthly[7]], value: p.monthly[7] }] } }] }); };
     U.$$('#prof .ptabs button').forEach(b => b.onclick = () => show(b.dataset.t));
     show('o');
   }
@@ -2071,7 +2325,7 @@ window.D={"prov":{"Tehran":{"fa":"تهران","hoods":46,"cities":9,"props":1193
           <div class="card pad"><div class="h2"><h2>کارشناسان این استان</h2></div>${xs.length ? U.expertTable(xs) : '<p class="lede">کارشناسی تخصیص داده نشده.</p>'}</div></div></div>
       <div class="grid g2"><div class="card pad"><div class="h2"><h2>آخرین کارها در ${p.fa}</h2></div>${timeline(B.events.filter(e => e.prov === id).slice(0, 8))}</div>
         <div class="card pad"><div class="h2"><h2>نیاز به پیگیری</h2></div>${U.attention(5, id)}<div style="margin-top:16px">${U.aiCard(p.fa)}</div></div></div></div>`;
-    mini(U.$('#dm'), [() => L.geoJSON(p.feature, { style: { color: '#007C7A', weight: 2, fillColor: '#E6F7F7', fillOpacity: .7 } })].concat(cs.map(c => () => L.polygon(c.b.map(ll), { color: '#fff', weight: 1, fillColor: '#00ADAB', fillOpacity: .8 }).bindTooltip('شهر ' + c.n))));
+    mini(U.$('#dm'), [() => L.geoJSON(p.feature, { style: { color: '#3B5BDB', weight: 2, fillColor: '#E6F7F7', fillOpacity: .7 } })].concat(cs.map(c => () => L.polygon(c.b.map(ll), { color: '#fff', weight: 1, fillColor: '#00ADAB', fillOpacity: .8 }).bindTooltip('شهر ' + c.n))));
     U.chart(U.$('#dc'), { grid: { left: 8, right: 40, top: 10, bottom: 26 }, tooltip: { trigger: 'axis', valueFormatter: v => fa(v) }, xAxis: { type: 'category', inverse: true, data: B.MONTHS, axisTick: { show: false }, axisLine: { lineStyle: { color: '#E2E8F0' } }, axisLabel: { color: '#64748B' } }, yAxis: { position: 'right', splitLine: { lineStyle: { color: '#F1F5F9' } }, axisLabel: { color: '#94A3B8', formatter: v => fa(v) } }, series: [{ type: 'bar', data: p.monthly, barWidth: '50%', itemStyle: { color: '#00ADAB', borderRadius: [4, 4, 0, 0] } }] });
   }
   function city(id) {
@@ -2082,7 +2336,7 @@ window.D={"prov":{"Tehran":{"fa":"تهران","hoods":46,"cities":9,"props":1193
       <div class="grid g2"><div class="card pad"><div class="h2"><h2>مناطق و محله‌ها</h2></div><div class="dmap" id="dm"></div></div>
         <div class="card pad"><div class="h2"><h2>محله‌ها</h2><div class="grow"></div><small class="muted">مرحله‌ی فرم</small></div><div class="list">${hs.map(h => `<a class="row" href="#d/hood/${h.id}"><span class="t"><b>محله ${h.n}</b><small>${h.status} · ${fa(h.props)} ملک</small></span><span style="width:110px">${U.steps(h.steps)}</span></a>`).join('')}</div></div></div>
       <div class="card pad"><div class="h2"><h2>آخرین کارها</h2></div>${timeline(B.events.filter(e => e.city === id).slice(0, 8))}</div></div>`;
-    mini(U.$('#dm'), [() => L.polygon(c.b.map(ll), { color: '#007C7A', weight: 2, fillColor: '#fff', fillOpacity: 1 })].concat(B.D.regions.filter(r => r.city === id).map(r => () => L.polygon(r.b.map(ll), { color: '#94A3B8', weight: 1, fillOpacity: 0 }))).concat(hs.map(h => () => L.polygon(h.b.map(ll), { color: '#fff', weight: 1, fillColor: h.status === 'تأیید شده' ? '#40BDBB' : '#B3E6E5', fillOpacity: .9 }).bindTooltip('محله ' + h.n))));
+    mini(U.$('#dm'), [() => L.polygon(c.b.map(ll), { color: '#3B5BDB', weight: 2, fillColor: '#fff', fillOpacity: 1 })].concat(B.D.regions.filter(r => r.city === id).map(r => () => L.polygon(r.b.map(ll), { color: '#94A3B8', weight: 1, fillOpacity: 0 }))).concat(hs.map(h => () => L.polygon(h.b.map(ll), { color: '#fff', weight: 1, fillColor: h.status === 'تأیید شده' ? '#40BDBB' : '#B3E6E5', fillOpacity: .9 }).bindTooltip('محله ' + h.n))));
   }
   function hood(id) {
     const h = B.hoodBy[id]; const c = B.cityBy[h.city]; const p = B.provBy[c.p]; const r = B.regionBy[h.reg] || { n: '' };
@@ -2093,16 +2347,15 @@ window.D={"prov":{"Tehran":{"fa":"تهران","hoods":46,"cities":9,"props":1193
       ${q ? `<div class="card pad" style="border-color:var(--s-100);background:var(--s-50);display:flex;gap:12px;align-items:center">${U.av(q.x)}<div style="flex:1"><b>${q.x.n}</b> این محله را ${fa(q.age)} روز پیش برای تأیید فرستاده است.</div></div>` : ''}
       <section class="card pad"><div class="h2"><h2>فرم ثبت محله</h2><div class="grow"></div><b>${fa(h.steps)} از ۶ مرحله</b></div>
         <div class="formsteps" style="margin-top:10px">${B.STEP_NAMES.map((n, i) => `<div class="fs ${i < h.steps ? 'on' : ''}"><small>مرحله ${fa(i + 1)}</small><b>${n}</b><span>${i < h.steps ? ic('check', 'sm') + ' کامل' : 'خالی'}</span></div>`).join('')}</div></section>
-      ${kpis([['ساکنان', fa(h.pop), 'سال مرجع ۱۴۰۵'], ['بلوک', fa(h.blk || 0)], ['معبر', fa(h.streets)], ['ملک و اراضی', fa(h.props)], ['عوارض مکانی', fa(h.feats)]])}
-      <div class="grid g2"><div class="card pad"><div class="h2"><h2>نقشه‌ی محله</h2></div><div class="dmap" id="dm"></div></div>
-        <div class="card pad"><div class="h2"><h2>شاخص‌های پایه</h2><div class="grow"></div><small class="muted">از مرحله‌های ۲ و ۳ فرم</small></div>
-          <div class="fields">${[['مساحت', '۱۲۵٫۴ هکتار'], ['تراکم جمعیت', '۱۶۷٫۵ نفر در هکتار'], ['واحد ناپایدار', '۵٬۴۴۵'], ['ظرفیت نوسازی', '۴۵۰ واحد'], ['نرخ بیکاری', '۹٪'], ['تملک مسکن', '۶۲٪'], ['دسترسی فاضلاب', '۷۵٪'], ['سرانه فضای سبز', '۳٫۵ مترمربع'], ['دفتر تسهیل‌گری', 'فعال'], ['سطح مخاطرات', 'متوسط']].map(([a, b], i) => `<div><span>${a}</span><b>${i < h.steps * 2 ? b : '<span class="faint">ثبت نشده</span>'}</b></div>`).join('')}</div></div></div>
-      <div class="card pad"><div class="h2"><h2>تاریخچه</h2></div>${timeline(B.events.filter(e => e.hood === id).concat(B.events.filter(e => e.city === h.city)).slice(0, 6))}</div></div>`;
+      ${U.hoodDetail(h)}
+      <div class="grid g2"><div class="card pad"><div class="h2"><h2>نقشه‌ی محله</h2><div class="grow"></div><small class="muted">${fa(h.streets)} معبر · ${fa(h.props)} ملک · ${fa(h.feats)} عارضه</small></div><div class="dmap" id="dm"></div></div>
+        <div class="card pad"><div class="h2"><h2>تاریخچه</h2></div>${timeline(B.events.filter(e => e.hood === id).concat(B.events.filter(e => e.city === h.city)).slice(0, 6))}</div></div></div>`;
+    U.hoodDetailCharts(h);
     const sts = B.D.streets.filter(s => s.h === id), pts = B.D.pts.filter(x => x.h === id), fts = B.D.feats.filter(f => f.h === id);
-    mini(U.$('#dm'), [() => L.polygon(h.b.map(ll), { color: '#007C7A', weight: 2, fillColor: '#E6F7F7', fillOpacity: .6 })]
-      .concat(sts.map(s => () => L.polyline(s.l.map(ll), { color: '#334155', weight: 3 }).bindTooltip(s.n)))
-      .concat(fts.map(f => () => L.polygon(f.b.map(ll), { color: '#40BDBB', weight: 1, fillColor: '#B3E6E5', fillOpacity: .9 }).bindTooltip(f.n)))
-      .concat(pts.map(x => () => L.circleMarker(ll(x.c), { radius: 4, color: '#fff', weight: 1, fillColor: '#1E40AF', fillOpacity: 1 }).bindTooltip('ملک ' + x.code))), L.polygon(h.b.map(ll)).getBounds());
+    mini(U.$('#dm'), [() => L.polygon(h.b.map(ll), { color: '#1E40AF', weight: 2, fillColor: '#EEF2FF', fillOpacity: .5 })]
+      .concat(sts.map(s => () => L.polyline(s.l.map(ll), { color: '#F59F00', weight: 3 }).bindTooltip(s.n)))
+      .concat(fts.map(f => () => L.polygon(f.b.map(ll), { color: '#F76707', weight: 1, fillColor: '#FFC08A', fillOpacity: .6 }).bindTooltip(f.n)))
+      .concat(pts.map(x => () => L.circleMarker(ll(x.c), { radius: 4, color: '#fff', weight: 1, fillColor: '#3B5BDB', fillOpacity: 1 }).bindTooltip('ملک ' + x.code))), L.polygon(h.b.map(ll)).getBounds());
   }
   function expert(id) {
     const x = B.expBy[id]; const evs = B.events.filter(e => e.x.id === id);
@@ -2127,7 +2380,7 @@ window.D={"prov":{"Tehran":{"fa":"تهران","hoods":46,"cities":9,"props":1193
         <div style="display:flex;justify-content:space-between;font-size:12px" class="muted"><span>شروع: ${fa(Math.abs(p.startM))} ماه پیش</span><span>پایان: ${p.endM > 0 ? fa(p.endM) + ' ماه دیگر' : 'گذشته'}</span></div></section>
       <div class="grid g2"><div class="card pad"><div class="h2"><h2>مراحل</h2></div><div class="tl">${ms.map(([t, m, done]) => `<div class="it"><span class="av ${done ? '' : 'b'}" style="${done ? '' : 'background:var(--sunk);color:var(--faint)'}">${done ? ic('check', 'sm') : ic('clock', 'sm')}</span><div><b>${t}</b><small>${m <= 0 ? fa(-m) + ' ماه پیش' : fa(m) + ' ماه دیگر'}</small></div></div>`).join('')}</div></div>
         <div class="card pad"><div class="h2"><h2>موقعیت</h2></div><div class="dmap" id="dm"></div></div></div></div>`;
-    mini(U.$('#dm'), [() => L.polygon(h.b.map(ll), { color: '#007C7A', weight: 2, fillColor: '#E6F7F7', fillOpacity: .5 })].concat(p.geom ? [() => L.polygon(p.geom.map(ll), { color: '#007C7A', weight: 2, dashArray: '5 4', fillColor: '#00ADAB', fillOpacity: .2 })] : [() => L.circleMarker(ll(p.c), { radius: 9, color: '#fff', weight: 2, fillColor: '#C2410C', fillOpacity: 1 })]));
+    mini(U.$('#dm'), [() => L.polygon(h.b.map(ll), { color: '#3B5BDB', weight: 2, fillColor: '#E6F7F7', fillOpacity: .5 })].concat(p.geom ? [() => L.polygon(p.geom.map(ll), { color: '#3B5BDB', weight: 2, dashArray: '5 4', fillColor: '#00ADAB', fillOpacity: .2 })] : [() => L.circleMarker(ll(p.c), { radius: 9, color: '#fff', weight: 2, fillColor: '#C2410C', fillOpacity: 1 })]));
   }
 
   /* ---------- router ---------- */

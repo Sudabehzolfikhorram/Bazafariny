@@ -11,6 +11,7 @@
   let metric = 'records';
 
   const ll = c => [c[0], c[1]];
+  const fit = (b, o) => { map.stop(); if (map._animatingZoom) map.fitBounds(b, Object.assign({}, o, { animate: false })); else map.fitBounds(b, o); };
   const PAD = mz => Object.assign(innerWidth < 760 ? { padding: [16, 16] } : { paddingTopLeft: [60, 70], paddingBottomRight: [400, 110] }, mz ? { maxZoom: mz } : {});
   const boundsOf = pts => L.latLngBounds(pts.map(ll));
 
@@ -36,12 +37,15 @@
         <div class="float viewsw" role="tablist" aria-label="نوع نمایش"><button role="tab" data-v="2d" class="on">${ic('map', 'sm')} نقشه</button><button role="tab" data-v="sat">${ic('sat', 'sm')} ماهواره</button><button role="tab" data-v="3d">${ic('chart', 'sm')} سه‌بعدی و زمان</button><button role="tab" data-v="atlas">${ic('grid', 'sm')} اطلس استان‌ها</button></div>
       </section>
 
-      <div class="sec-title" style="margin-top:28px"><span class="n">۲</span><h2>کارشناسان چه کرده‌اند؟</h2><p>بازه‌ی یک ماه اخیر</p></div>
-      <div class="grid g-21">${U.expertsCard(6)}${U.rhythmCard()}</div>
+      <div class="sec-title" style="margin-top:28px"><span class="n">۲</span><h2>وضعیت محلات هدف</h2><p id="renewScope">همراه نقشه عوض می‌شود</p></div>
+      <div id="renew" class="renew"></div>
 
-      <div class="sec-title" style="margin-top:28px"><span class="n">۳</span><h2>پروژه‌ها و کارهای منتظر شما</h2><p>پیشرفت واقعی در برابر برنامه، و صف تأیید</p></div>
+      <div class="sec-title" style="margin-top:28px"><span class="n">۳</span><h2>کارشناسان چه کرده‌اند؟</h2><p>بازه‌ی یک ماه اخیر</p></div>
+      <div class="grid g-21 xgrid">${U.expertsCard(6)}<div class="stackcol">${U.rhythmCard()}${U.formStatusCard()}</div></div>
+
+      <div class="sec-title" style="margin-top:28px"><span class="n">۴</span><h2>پروژه‌ها و کارهای منتظر شما</h2><p>پیشرفت واقعی در برابر برنامه، و صف تأیید</p></div>
       <div class="grid g2">
-        <div class="card pad"><div class="h2"><h2>پیشرفت پروژه‌ها</h2><div class="grow"></div><span class="muted" style="font-size:12px">خط سیاه = جایی که باید باشد</span></div>${U.bullets(B.projects.slice(0, 6))}</div>
+        <div class="card pad"><div class="h2"><h2>پیشرفت پروژه‌ها</h2><div class="grow"></div><span class="muted" style="font-size:12px">خط آبی = جایی که باید باشد</span></div>${U.bullets(B.projects.slice(0, 6))}</div>
         <div class="card pad"><div class="h2"><h2>منتظر تأیید شما</h2><div class="grow"></div><span class="badge wait">${fa(B.queue.length)} مورد</span></div>
           <div class="list">${B.queue.slice(0, 6).map(q => `<a class="row" href="#d/hood/${q.ref}">${U.av(q.x)}<span class="t"><b>${q.n}</b><small>${q.x.n} · ${q.city}</small></span><span style="width:84px">${U.steps(q.steps)}<small class="muted">${fa(q.age)} روز در صف</small></span></a>`).join('')}</div></div>
       </div>
@@ -78,26 +82,26 @@
     else if (s.lv === 2) drawCity(s.id, keepView);
     else if (s.lv === 3) drawRegion(s.id, keepView);
     else drawHood(s.id, keepView);
-    panel(); legend(); if (view === '3d') draw3d(); if (view === 'atlas') drawAtlas();
+    panel(); legend(); renew(); if (view === '3d') draw3d(); if (view === 'atlas') drawAtlas();
   }
 
   function drawCountry(keep) {
     const gj = L.geoJSON(B.GI, {
       style: f => { const p = B.provBy[f.properties.en]; const c = provColor(p); return { color: '#fff', weight: 1.2, fillColor: c || '#E2E8F0', fillOpacity: 1, className: c ? '' : 'nodata' }; },
       onEachFeature: (f, l) => { const p = B.provBy[f.properties.en];
-        l.on('mousemove', e => { l.setStyle({ weight: 2.5, color: '#0F172A' }); U.tip(e.originalEvent, `<b>${p.fa}</b><br>${p.has ? `${fa(p.records)} رکورد · ${pct(p.completeness)} کامل<br>${fa(p.pending)} مورد منتظر تأیید` : 'هنوز داده‌ای ثبت نشده'}`); });
+        l.on('mousemove', e => { l.setStyle({ weight: 2.5, color: '#3B5BDB' }); U.tip(e.originalEvent, `<b>${p.fa}</b><br>${p.has ? `${fa(p.records)} رکورد · ${pct(p.completeness)} کامل<br>${fa(p.pending)} مورد منتظر تأیید` : 'هنوز داده‌ای ثبت نشده'}`); });
         l.on('mouseout', () => { l.setStyle({ weight: 1.2, color: '#fff' }); U.tip(null); });
         l.on('click', () => go({ lv: 1, id: p.id })); }
     }).addTo(shapes);
     B.provs.forEach(p => { const c = U.centroid(U.biggest(p.feature)); if (p.has) label([c[1], c[0]], p.short, p.has ? (metric === 'completeness' ? pct(p.completeness) : fa(p[metric])) : null); });
-    if (!keep) map.fitBounds(gj.getBounds(), PAD());
+    if (!keep) fit(gj.getBounds(), PAD());
   }
   function fadeOthers(exceptEn) {
     L.geoJSON(B.GI, { style: f => ({ color: '#fff', weight: 1, fillColor: f.properties.en === exceptEn ? '#FFFFFF' : '#E9EEF3', fillOpacity: 1 }), onEachFeature: (f, l) => { if (f.properties.en !== exceptEn) l.on('click', () => go({ lv: 1, id: f.properties.en })); } }).addTo(shapes);
   }
   function drawProv(id, keep) {
     const p = B.provBy[id]; fadeOthers(id);
-    const outline = L.geoJSON(p.feature, { style: { color: '#0F172A', weight: 2, fill: false }, interactive: false }).addTo(shapes);
+    const outline = L.geoJSON(p.feature, { style: { color: '#3B5BDB', weight: 2, fill: false }, interactive: false }).addTo(shapes);
     const cities = B.D.cities.filter(c => c.p === id);
     const mx = Math.max(1, ...cities.map(c => c.hoods));
     cities.forEach(c => {
@@ -107,7 +111,7 @@
       L.circleMarker(ll(c.c), { radius: 6 + Math.sqrt(c.hoods) * 3.2, color: '#fff', weight: 2, fillColor: C.hood, fillOpacity: .9 }).on('click', () => go({ lv: 2, id: c.id })).on('mousemove', e => U.tip(e.originalEvent, `<b>شهر ${c.n}</b><br>${fa(c.regions)} منطقه · ${fa(c.hoods)} محله · ${fa(c.props)} ملک`)).on('mouseout', () => U.tip(null)).addTo(shapes);
       label(ll(c.c), c.n, fa(c.hoods) + ' محله');
     });
-    if (!keep) map.fitBounds(outline.getBounds(), PAD());
+    if (!keep) fit(outline.getBounds(), PAD());
   }
   function drawPoints(hoodIds) {
     const hs = new Set(hoodIds);
@@ -123,40 +127,40 @@
     sel = { kind, it }; U.tip(null);
     if (selLayer) { shapes.removeLayer(selLayer); selLayer = null; }
     const pos = it.c ? ll(it.c) : it.l ? ll(it.l[Math.floor(it.l.length / 2)]) : L.polygon(it.b.map(ll)).getBounds().getCenter();
-    selLayer = L.circleMarker(pos, { radius: 14, color: '#0F172A', weight: 2, fill: false, interactive: false }).addTo(shapes);
+    selLayer = L.circleMarker(pos, { radius: 14, color: '#3B5BDB', weight: 2, fill: false, interactive: false }).addTo(shapes);
     panel();
   }
   function drawCity(id, keep) {
     const c = B.cityBy[id]; fadeOthers('_');
-    const outline = L.polygon(c.b.map(ll), { color: '#0F172A', weight: 2, fillColor: '#fff', fillOpacity: 1 }).addTo(shapes);
+    const outline = L.polygon(c.b.map(ll), { color: '#3B5BDB', weight: 2, fillColor: '#fff', fillOpacity: 1 }).addTo(shapes);
     const regs = B.D.regions.filter(r => r.city === id);
     regs.forEach(r => { const hs = B.D.hoods.filter(h => h.reg === r.id); const pg = L.polygon(r.b.map(ll), { color: '#94A3B8', weight: 1, fillColor: hs.length ? U.ramp(Math.min(.99, hs.length / 5)) : '#F8FAFC', fillOpacity: .55 }).addTo(shapes);
       pg.on('click', () => go({ lv: 3, id: r.id })); pg.on('mousemove', e => U.tip(e.originalEvent, `<b>${r.n}</b><br>${fa(hs.length)} محله ثبت‌شده`)); pg.on('mouseout', () => U.tip(null));
       label(ll(r.c), r.n, null); });
     const hoods = B.D.hoods.filter(h => h.city === id);
-    hoods.forEach(h => L.polygon(h.b.map(ll), { color: '#0F172A', weight: 1, fillOpacity: 0, dashArray: '3 3' }).on('click', () => go({ lv: 4, id: h.id })).addTo(shapes));
+    hoods.forEach(h => L.polygon(h.b.map(ll), { color: '#3B5BDB', weight: 1, fillOpacity: 0, dashArray: '3 3' }).on('click', () => go({ lv: 4, id: h.id })).addTo(shapes));
     drawPoints(hoods.map(h => h.id));
-    if (!keep) map.fitBounds(outline.getBounds(), PAD());
+    if (!keep) fit(outline.getBounds(), PAD());
   }
   function drawRegion(id, keep) {
     const r = B.regionBy[id], c = B.cityBy[r.city]; fadeOthers('_');
     L.polygon(c.b.map(ll), { color: '#CBD5E1', weight: 1, fillColor: '#fff', fillOpacity: 1, interactive: false }).addTo(shapes);
-    const outline = L.polygon(r.b.map(ll), { color: '#0F172A', weight: 2, fillColor: '#F8FAFC', fillOpacity: 1 }).addTo(shapes);
+    const outline = L.polygon(r.b.map(ll), { color: '#3B5BDB', weight: 2, fillColor: '#F8FAFC', fillOpacity: 1 }).addTo(shapes);
     const hoods = B.D.hoods.filter(h => h.reg === id);
     hoods.forEach(h => { const col = h.status === 'تأیید شده' ? C.hood : h.status === 'در انتظار تأیید' ? '#91A7FF' : h.status === 'برگشت برای اصلاح' ? '#FFC9C9' : '#E2E8F0';
       const pg = L.polygon(h.b.map(ll), { color: '#fff', weight: 1.5, fillColor: col, fillOpacity: .85 }).addTo(shapes);
       pg.on('click', () => go({ lv: 4, id: h.id })); pg.on('mousemove', e => U.tip(e.originalEvent, `<b>محله ${h.n}</b><br>${h.status} · مرحله ${fa(h.steps)} از ۶`)); pg.on('mouseout', () => U.tip(null));
       label(ll(h.c), h.n, null); });
     drawPoints(hoods.map(h => h.id));
-    if (!keep) map.fitBounds(outline.getBounds(), PAD());
+    if (!keep) fit(outline.getBounds(), PAD());
   }
   function drawHood(id, keep) {
     const h = B.hoodBy[id]; fadeOthers('_');
     const sib = B.D.hoods.filter(x => x.reg === h.reg && x.id !== id);
     sib.forEach(x => L.polygon(x.b.map(ll), { color: '#CBD5E1', weight: 1, fillColor: '#F8FAFC', fillOpacity: 1 }).on('click', () => go({ lv: 4, id: x.id })).addTo(shapes));
-    const outline = L.polygon(h.b.map(ll), { color: '#0F172A', weight: 2.5, fillColor: '#F1F5F9', fillOpacity: .7 }).addTo(shapes);
+    const outline = L.polygon(h.b.map(ll), { color: '#1E40AF', weight: 2.5, fillColor: '#F1F5F9', fillOpacity: .7 }).addTo(shapes);
     drawPoints([id]);
-    if (!keep) map.fitBounds(outline.getBounds(), PAD(16));
+    if (!keep) fit(outline.getBounds(), PAD(16));
   }
 
   function chain() {
@@ -196,7 +200,7 @@
       extra = `<div style="display:flex;gap:10px;flex-wrap:wrap;font-size:11.5px" class="muted">${[[C.hood, 'تأیید شده'], ['#91A7FF', 'منتظر تأیید'], ['#FFC9C9', 'برگشت‌خورده'], ['#E2E8F0', 'پیش‌نویس']].map(([c, t]) => `<span><i style="display:inline-block;width:9px;height:9px;border-radius:3px;background:${c};margin-inline-end:4px"></i>${t}</span>`).join('')}</div>`;
     } else {
       const h = B.hoodBy[st.id]; title = 'محله ' + h.n; prov = B.provBy[B.cityBy[h.city].p];
-      cells = [['معبر', h.streets], ['ملک', h.props], ['عارضه', h.feats], ['ساکنان', h.pop], ['بلوک', h.blk || 0], ['پروژه', B.projects.filter(p => p.h === h.id).length]];
+      cells = [['ساکنان', h.pop], ['خانوار', h.hh], ['واحد مسکونی', h.units], ['معبر', h.streets], ['ملک', h.props], ['عارضه', h.feats]];
       comp = h.steps / 6 * 100;
       extra = `<div><div class="mini-h">فرم محله ${U.statusBadge(h.status)}<span class="grow"></span><small class="muted">مرحله ${fa(h.steps)} از ۶</small></div>${U.steps(h.steps)}<small class="muted">${B.STEP_NAMES[Math.min(5, h.steps)]}${h.steps < 6 ? ' هنوز کامل نشده' : ' انجام شد'}</small></div>`;
       kids = B.D.streets.filter(s => s.h === h.id).map(s => ({ n: s.n, s: s.s, v: null, go: () => location.hash = '#d/hood/' + h.id }));
@@ -210,12 +214,23 @@
         <div class="ladder">${cells.map(([l, v, suf]) => `<div class="cell ${v ? '' : 'dim'}"><b class="num">${fa(v)}${suf || ''}</b><small>${l}</small></div>`).join('')}</div>
         <div><div class="mini-h">کامل‌بودن اطلاعات<span class="grow"></span><b>${pct(comp)}</b></div><div class="bar"><i style="width:${comp}%"></i></div></div>
         ${extra}
+        ${st.lv === 4 ? U.hoodPanel(B.hoodBy[st.id]) : ''}
         <div><div class="mini-h">نیاز به پیگیری</div>${U.attention(3, st.lv === 0 ? null : (prov && prov.id))}</div>
         ${kids.length ? `<div><div class="mini-h">${st.lv === 4 ? 'معابر این محله' : CHILD[st.lv] + '‌ها'}<span class="grow"></span><small class="muted">${fa(kids.length)}</small></div><div class="list">${kids.map((k, i) => `<button class="row" data-k="${i}"><span class="t"><b>${k.n}</b><small>${k.s}</small></span>${k.v != null ? `<span style="width:70px"><div class="bar"><i style="width:${k.v / mx * 100}%"></i></div></span><b class="num" style="width:44px;text-align:left;font-size:12.5px">${k.vs || fa(k.v)}</b>` : ''}</button>`).join('')}</div></div>` : ''}`}
         <div style="display:flex;gap:8px;margin-top:auto">${detail ? `<a class="btn pri" href="${detail}" style="flex:1">${ic('eye', 'sm')} صفحه‌ی کامل ${title}</a>` : ''}${st.lv < 4 && !empty ? `<button class="btn ghost" onclick="UI.toast('فرم «ایجاد ${CHILD[st.lv]}» باز می‌شود')" style="${detail ? '' : 'flex:1'}">${ic('plus', 'sm')} تعریف ${CHILD[st.lv]}</button>` : ''}</div>
       </div>`;
     U.$$('#ctx .crumb button').forEach(b => b.onclick = () => go(ch[+b.dataset.i]));
     U.$$('#ctx [data-k]').forEach(b => b.onclick = () => kids[+b.dataset.k].go());
+  }
+  function renew() {
+    const el = U.$('#renew'); if (!el) return;
+    let hs = B.D.hoods, name = 'کل کشور';
+    if (st.lv === 1) { hs = hs.filter(h => (B.cityBy[h.city] || {}).p === st.id); name = 'استان ' + B.provBy[st.id].fa; }
+    else if (st.lv === 2) { hs = hs.filter(h => h.city === st.id); name = 'شهر ' + B.cityBy[st.id].n; }
+    else if (st.lv === 3) { hs = hs.filter(h => h.reg === st.id); name = B.regionBy[st.id].n + ' ' + B.cityBy[B.regionBy[st.id].city].n; }
+    else if (st.lv === 4) { hs = [B.hoodBy[st.id]]; name = 'محله ' + B.hoodBy[st.id].n; }
+    U.$('#renewScope').textContent = `${name} · همراه نقشه عوض می‌شود`;
+    el.innerHTML = U.renewSection(hs, name);
   }
   function itemPanel() {
     const ch = chain();
@@ -235,7 +250,7 @@
     if (v === 'atlas') drawAtlas();
     U.$$('.viewsw button').forEach(b => { b.classList.toggle('on', b.dataset.v === v); b.setAttribute('aria-selected', b.dataset.v === v); });
     U.$('#hint').style.display = v === '3d' || v === 'atlas' ? 'none' : (st.lv === 0 ? '' : 'none');
-    if (v === '3d') draw3d(); else { stop(); setTimeout(() => map.invalidateSize(), 50); }
+    if (v === '3d') draw3d(); else { stop(); setTimeout(() => { map.invalidateSize(); if (v !== 'atlas') go(st); }, 60); }
   }
 
   /* ---------- 3D (tilted extrusion) ---------- */
@@ -338,13 +353,13 @@
       ${B.provs.map(p => { const [c, r] = p.grid; const X = c * (S + G), y = r * (S + G);
         const t = p.has ? (p[key] - mn) / ((mx - mn) || 1) : 0; const fill = p.has ? U.ramp(t * .999) : 'url(#hatchA)'; const ink = p.has ? U.inkOn(fill) : '#94A3B8';
         return `<g class="atile ${p.id === selId ? 'sel' : ''}" data-id="${p.id}" tabindex="0" role="button" aria-label="${p.fa}">
-          <rect x="${X}" y="${y}" width="${S}" height="${S}" rx="14" fill="${fill}" stroke="${p.id === selId ? '#0F172A' : p.has ? 'none' : '#E2E8F0'}" stroke-width="${p.id === selId ? 3 : 1}"/>
+          <rect x="${X}" y="${y}" width="${S}" height="${S}" rx="14" fill="${fill}" stroke="${p.id === selId ? '#1E40AF' : p.has ? 'none' : '#E2E8F0'}" stroke-width="${p.id === selId ? 3 : 1}"/>
           <text x="${X + S - 10}" y="${y + 22}" direction="rtl" font-size="12" font-weight="700" fill="${ink}">${esc(p.short)}</text>
           ${p.has ? `<text x="${X + S - 10}" y="${y + 56}" direction="rtl" font-size="20" font-weight="800" fill="${ink}">${key === 'completeness' ? pct(p[key]) : fa(p[key])}</text>
-          <rect x="${X + 10}" y="${y + S - 18}" width="${S - 20}" height="5" rx="2.5" fill="${ink === '#fff' ? 'rgba(255,255,255,.3)' : 'rgba(15,23,42,.08)'}"/><rect x="${X + 10 + (S - 20) * (1 - p.completeness / 100)}" y="${y + S - 18}" width="${(S - 20) * p.completeness / 100}" height="5" rx="2.5" fill="${ink === '#fff' ? '#fff' : '#0F172A'}"/>`
+          <rect x="${X + 10}" y="${y + S - 18}" width="${S - 20}" height="5" rx="2.5" fill="${ink === '#fff' ? 'rgba(255,255,255,.3)' : 'rgba(15,23,42,.08)'}"/><rect x="${X + 10 + (S - 20) * (1 - p.completeness / 100)}" y="${y + S - 18}" width="${(S - 20) * p.completeness / 100}" height="5" rx="2.5" fill="${ink === '#fff' ? '#fff' : '#1E40AF'}"/>`
           : `<text x="${X + S - 10}" y="${y + 56}" direction="rtl" font-size="11.5" fill="#94A3B8">بدون داده</text>`}
           ${p.pending ? `<circle cx="${X + 15}" cy="${y + 17}" r="9" fill="#3B5BDB"/><text x="${X + 15}" y="${y + 21}" text-anchor="middle" font-size="10.5" font-weight="700" fill="#fff">${fa(p.pending)}</text>` : ''}</g>`; }).join('')}</svg>
-      <div class="atl-key"><span><i style="background:#0F172A;width:16px;height:4px"></i>نوار پایین: کامل‌بودن</span><span><i style="background:#3B5BDB;border-radius:50%"></i>منتظر تأیید</span><span><i class="empty-hatch"></i>بدون داده</span><span>غرب در چپ، شرق در راست</span></div>`;
+      <div class="atl-key"><span><i style="background:#1E40AF;width:16px;height:4px"></i>نوار پایین: کامل‌بودن</span><span><i style="background:#3B5BDB;border-radius:50%"></i>منتظر تأیید</span><span><i class="empty-hatch"></i>بدون داده</span><span>غرب در چپ، شرق در راست</span></div>`;
     U.$$('#atl .atile').forEach(g => { const p = B.provBy[g.dataset.id];
       g.onclick = () => { U.tip(null); go({ lv: 1, id: p.id }); };
       g.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); g.onclick(); } };

@@ -17,7 +17,7 @@
           <div class="kstrip">${[['شهر', T.cities], ['محله', T.hoods], ['معبر', T.streets], ['ملک و اراضی', T.props], ['پروژه', T.exec + T.partner]].map(([l, v]) => `<div class="k"><span class="v num">${fa(v)}</span><span class="l">${l}</span></div>`).join('')}</div></div>
         <div class="card pad"><div class="h2"><h2>از استان تا معبر</h2><div class="grow"></div><span class="muted" style="font-size:12px">تعداد · درصد کامل‌بودن</span></div>
           <p class="lede" style="margin-bottom:10px">هر سطح باید پیش از سطح پایین‌تر کامل شود. شکاف‌ها این‌جا پیداست.</p>
-          <div class="stair">${[['استان', T.provsWith, 100, '/۳۱'], ['شهر', T.cities, 88], ['منطقه', T.regions, 74], ['محله', T.hoods, Math.round(B.D.hoods.reduce((a, h) => a + h.steps, 0) / B.D.hoods.length / 6 * 100)], ['معبر', T.streets, 57], ['نقاط و محدوده‌ها', T.feats + T.props, 49]].map(([l, v, c, s]) => `<div class="st"><span>${l}</span><div class="bar"><i style="width:${c}%;background:${c < 55 ? '#F59F00' : U.CAT.hood}"></i></div><b class="num">${fa(v)}${s || ''}</b></div>`).join('')}</div>
+          <div class="stair">${[['استان', T.provsWith, 100, '/۳۱'], ['شهر', T.cities, 88], ['منطقه', T.regions, 74], ['محله', T.hoods, Math.round(B.D.hoods.reduce((a, h) => a + h.steps, 0) / B.D.hoods.length / 6 * 100)], ['معبر', T.streets, 57], ['نقاط و محدوده‌ها', T.feats + T.props, 49]].map(([l, v, c, s]) => `<div class="st"><span>${l}</span><div class="bar"><i style="width:${c}%;background:${c < 55 ? 'linear-gradient(270deg,#FFE08A,#F59F00)' : 'linear-gradient(270deg,#63D3D1,#0CA5A3)'}"></i></div><b class="num">${fa(v)}${s || ''}</b></div>`).join('')}</div>
         </div>
       </section>
 
@@ -53,12 +53,12 @@
           <rect class="bg" x="${X}" y="${y}" width="${S}" height="${S}" rx="16" fill="${fill}" stroke="${p.has ? 'none' : '#E2E8F0'}"/>
           <text x="${X + S - 12}" y="${y + 24}" text-anchor="start" direction="rtl" font-size="12.5" font-weight="700" fill="${ink}">${esc(p.short)}</text>
           ${p.has ? `<text x="${X + S - 12}" y="${y + 60}" direction="rtl" font-size="22" font-weight="800" fill="${ink}">${fmtM(p, metric)}</text>
-          <rect x="${X + 12}" y="${y + S - 20}" width="${S - 24}" height="5" rx="2.5" fill="${ink === '#fff' ? 'rgba(255,255,255,.3)' : 'rgba(15,23,42,.08)'}"/><rect x="${X + 12 + (S - 24) * (1 - p.completeness / 100)}" y="${y + S - 20}" width="${(S - 24) * p.completeness / 100}" height="5" rx="2.5" fill="${ink === '#fff' ? '#fff' : '#0F172A'}"/>`
+          <rect x="${X + 12}" y="${y + S - 20}" width="${S - 24}" height="5" rx="2.5" fill="${ink === '#fff' ? 'rgba(255,255,255,.3)' : 'rgba(15,23,42,.08)'}"/><rect x="${X + 12 + (S - 24) * (1 - p.completeness / 100)}" y="${y + S - 20}" width="${(S - 24) * p.completeness / 100}" height="5" rx="2.5" fill="${ink === '#fff' ? '#fff' : '#1E40AF'}"/>`
           : `<text x="${X + S - 12}" y="${y + 60}" direction="rtl" font-size="12" fill="#94A3B8">بدون داده</text>`}
           ${p.pending && metric !== 'pending' ? `<circle cx="${X + 16}" cy="${y + 18}" r="9" fill="#3B5BDB"/><text x="${X + 16}" y="${y + 22}" text-anchor="middle" font-size="10.5" font-weight="700" fill="#fff">${fa(p.pending)}</text>` : ''}
         </g>`; }).join('')}
     </svg>
-    <div style="display:flex;gap:16px;align-items:center;margin-top:12px;font-size:12px;color:var(--muted);flex-wrap:wrap"><span style="display:flex;align-items:center;gap:6px"><i style="width:18px;height:5px;border-radius:3px;background:#0F172A;display:inline-block"></i>نوار پایین هر خانه: کامل‌بودن داده</span><span style="display:flex;align-items:center;gap:6px"><i style="width:12px;height:12px;border-radius:50%;background:#3B5BDB;display:inline-block"></i>تعداد منتظر تأیید</span><span>چیدمان خانه‌ها تقریباً جای جغرافیایی استان‌هاست؛ غرب در چپ.</span></div>`;
+    <div style="display:flex;gap:16px;align-items:center;margin-top:12px;font-size:12px;color:var(--muted);flex-wrap:wrap"><span style="display:flex;align-items:center;gap:6px"><i style="width:18px;height:5px;border-radius:3px;background:#1E40AF;display:inline-block"></i>نوار پایین هر خانه: کامل‌بودن داده</span><span style="display:flex;align-items:center;gap:6px"><i style="width:12px;height:12px;border-radius:50%;background:#3B5BDB;display:inline-block"></i>تعداد منتظر تأیید</span><span>چیدمان خانه‌ها تقریباً جای جغرافیایی استان‌هاست؛ غرب در چپ.</span></div>`;
     U.$('#tiles').innerHTML = svg;
     U.$$('#tiles .tile').forEach(g => { const p = B.provBy[g.dataset.id];
       g.onclick = () => { sel = p.id; U.$$('#tiles .tile').forEach(x => x.classList.toggle('sel', x === g)); profile(); };
@@ -70,7 +70,7 @@
   function shapeSvg(p) {
     const rings = U.ringsOf(p.feature); const bb = U.bboxOf(rings.flat()); const s = 64 / Math.max(bb[2] - bb[0], bb[3] - bb[1]);
     const d = rings.map(r => 'M' + r.map(([x, y]) => `${((x - bb[0]) * s + 4).toFixed(1)},${((bb[3] - y) * s + 4).toFixed(1)}`).join('L') + 'Z').join('');
-    return `<svg viewBox="0 0 72 72" aria-hidden="true"><path d="${d}" fill="${p.has ? '#0F172A' : '#CBD5E1'}" stroke="#fff" stroke-width="1"/></svg>`;
+    return `<svg viewBox="0 0 72 72" aria-hidden="true"><path d="${d}" fill="${p.has ? '#1E40AF' : '#CBD5E1'}" stroke="#fff" stroke-width="1"/></svg>`;
   }
   function profile() {
     const p = B.provBy[sel]; const rank = [...B.provs].sort((a, b) => b.records - a.records).indexOf(p) + 1;
@@ -101,7 +101,7 @@
         xAxis: { type: 'category', inverse: true, boundaryGap: false, data: B.MONTHS, axisLine: { show: false }, axisTick: { show: false }, axisLabel: { color: '#94A3B8', fontSize: 10, interval: 1 } }, yAxis: { show: false },
         series: [{ type: 'line', smooth: .35, data: p.monthly, symbol: 'circle', symbolSize: 6, showSymbol: false, lineStyle: { color: C.prop, width: 2 }, itemStyle: { color: C.prop },
           areaStyle: { color: { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: 'rgba(59,91,219,.18)' }, { offset: 1, color: 'rgba(59,91,219,0)' }] } },
-          markPoint: { symbol: 'circle', symbolSize: 8, label: { show: true, position: 'top', formatter: o => fa(o.value), color: '#0F172A', fontWeight: 700, fontFamily: 'Vazirmatn' }, itemStyle: { color: C.prop }, data: [{ coord: [7, p.monthly[7]], value: p.monthly[7] }] } }] }); };
+          markPoint: { symbol: 'circle', symbolSize: 8, label: { show: true, position: 'top', formatter: o => fa(o.value), color: '#3B5BDB', fontWeight: 700, fontFamily: 'Vazirmatn' }, itemStyle: { color: C.prop }, data: [{ coord: [7, p.monthly[7]], value: p.monthly[7] }] } }] }); };
     U.$$('#prof .ptabs button').forEach(b => b.onclick = () => show(b.dataset.t));
     show('o');
   }

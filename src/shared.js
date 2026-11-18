@@ -8,13 +8,13 @@
   /* ---------- experts (compact, 4 weeks) ---------- */
   const SORTS = [['recs28', 'بیشترین ثبت'], ['lastDays', 'کم‌فعال‌ها'], ['pending', 'منتظر تأیید']];
   const weeks = x => { const w = [0, 1, 2, 3].map(i => x.days.slice(-28 + i * 7, -28 + i * 7 + 7 || undefined).reduce((a, b) => a + b, 0)); const m = Math.max(1, ...w);
-    return `<span class="wk4" title="ثبت هفتگی، ۴ هفته‌ی اخیر: ${w.map(fa).join('، ')}">${w.map((v, i) => `<i style="height:${Math.max(8, v / m * 100)}%;background:${v === 0 ? '#E2E8F0' : i === 3 ? '#3B5BDB' : '#A5B4FC'}"></i>`).join('')}</span>`; };
+    return `<span class="wk4" title="ثبت هفتگی، ۴ هفته‌ی اخیر: ${w.map(fa).join('، ')}">${w.map((v, i) => `<i style="height:${Math.max(8, v / m * 100)}%;background:${v === 0 ? '#E2E8F0' : i === 3 ? 'linear-gradient(180deg,#9DB2FF,#4C6EF5)' : 'linear-gradient(180deg,#DDE4FF,#B4C3FC)'}"></i>`).join('')}</span>`; };
   function expertRows(list) {
     return list.map(x => { const d = x.recs28 - x.prev28; const status = x.lastDays > 14 ? `<span class="badge warn">${fa(x.lastDays)} روز بی‌فعالیت</span>` : x.pending ? `<span class="badge wait">${fa(x.pending)} منتظر تأیید</span>` : `<span class="badge ok">فعال</span>`;
       return `<a class="xrow" href="#d/expert/${x.id}">${U.av(x)}<span class="t"><b>${x.n}</b><small>${x.role.replace('کارشناس ', '')} · ${x.provFa}</small></span>
         <span class="xn num"><b>${fa(x.recs28)}</b><small class="${d < 0 ? 'neg' : ''}">${d >= 0 ? '▲' : '▼'} ${fa(Math.abs(d))}</small></span>
         ${weeks(x)}
-        <span class="xa"><span class="bar"><i style="width:${x.approval}%;background:${x.approval < 80 ? '#F59F00' : '#0CA5A3'}"></i></span><small>${pct(x.approval)} تأیید</small></span>
+        <span class="xa"><span class="bar"><i style="width:${x.approval}%;background:${x.approval < 80 ? 'linear-gradient(90deg,#FFE08A,#F59F00)' : 'linear-gradient(90deg,#63D3D1,#0CA5A3)'}"></i></span><small>${pct(x.approval)} تأیید</small></span>
         <span class="xs">${status}</span></a>`; }).join('');
   }
   function expertsCard(limit = 6) {
@@ -30,7 +30,7 @@
   }
 
   /* ---------- rhythm: 30 days, compact ---------- */
-  const KINDS = [['ثبت', .52, CAT.hood], ['ویرایش', .24, '#91A7FF'], ['ارسال برای تأیید', .14, CAT.prop], ['اصلاح پس از برگشت', .10, CAT.street]];
+  const KINDS = [['ثبت', .52, 'linear-gradient(180deg,#63D3D1,#0CA5A3)'], ['ویرایش', .24, 'linear-gradient(180deg,#C5D0FF,#91A7FF)'], ['ارسال برای تأیید', .14, 'linear-gradient(180deg,#9DB2FF,#4C6EF5)'], ['اصلاح پس از برگشت', .10, 'linear-gradient(180deg,#FFE08A,#F59F00)']];
   function rhythmCard() {
     const days = 30; const tot = [...Array(days).keys()].map(d => B.experts.reduce((a, x) => a + x.days[84 - days + d], 0));
     const sum = tot.reduce((a, b) => a + b, 0), mx = Math.max(...tot), best = tot.indexOf(mx);

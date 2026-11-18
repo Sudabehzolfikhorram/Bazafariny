@@ -28,7 +28,7 @@
           <div class="card pad"><div class="h2"><h2>کارشناسان این استان</h2></div>${xs.length ? U.expertTable(xs) : '<p class="lede">کارشناسی تخصیص داده نشده.</p>'}</div></div></div>
       <div class="grid g2"><div class="card pad"><div class="h2"><h2>آخرین کارها در ${p.fa}</h2></div>${timeline(B.events.filter(e => e.prov === id).slice(0, 8))}</div>
         <div class="card pad"><div class="h2"><h2>نیاز به پیگیری</h2></div>${U.attention(5, id)}<div style="margin-top:16px">${U.aiCard(p.fa)}</div></div></div></div>`;
-    mini(U.$('#dm'), [() => L.geoJSON(p.feature, { style: { color: '#007C7A', weight: 2, fillColor: '#E6F7F7', fillOpacity: .7 } })].concat(cs.map(c => () => L.polygon(c.b.map(ll), { color: '#fff', weight: 1, fillColor: '#00ADAB', fillOpacity: .8 }).bindTooltip('شهر ' + c.n))));
+    mini(U.$('#dm'), [() => L.geoJSON(p.feature, { style: { color: '#3B5BDB', weight: 2, fillColor: '#E6F7F7', fillOpacity: .7 } })].concat(cs.map(c => () => L.polygon(c.b.map(ll), { color: '#fff', weight: 1, fillColor: '#00ADAB', fillOpacity: .8 }).bindTooltip('شهر ' + c.n))));
     U.chart(U.$('#dc'), { grid: { left: 8, right: 40, top: 10, bottom: 26 }, tooltip: { trigger: 'axis', valueFormatter: v => fa(v) }, xAxis: { type: 'category', inverse: true, data: B.MONTHS, axisTick: { show: false }, axisLine: { lineStyle: { color: '#E2E8F0' } }, axisLabel: { color: '#64748B' } }, yAxis: { position: 'right', splitLine: { lineStyle: { color: '#F1F5F9' } }, axisLabel: { color: '#94A3B8', formatter: v => fa(v) } }, series: [{ type: 'bar', data: p.monthly, barWidth: '50%', itemStyle: { color: '#00ADAB', borderRadius: [4, 4, 0, 0] } }] });
   }
   function city(id) {
@@ -39,7 +39,7 @@
       <div class="grid g2"><div class="card pad"><div class="h2"><h2>مناطق و محله‌ها</h2></div><div class="dmap" id="dm"></div></div>
         <div class="card pad"><div class="h2"><h2>محله‌ها</h2><div class="grow"></div><small class="muted">مرحله‌ی فرم</small></div><div class="list">${hs.map(h => `<a class="row" href="#d/hood/${h.id}"><span class="t"><b>محله ${h.n}</b><small>${h.status} · ${fa(h.props)} ملک</small></span><span style="width:110px">${U.steps(h.steps)}</span></a>`).join('')}</div></div></div>
       <div class="card pad"><div class="h2"><h2>آخرین کارها</h2></div>${timeline(B.events.filter(e => e.city === id).slice(0, 8))}</div></div>`;
-    mini(U.$('#dm'), [() => L.polygon(c.b.map(ll), { color: '#007C7A', weight: 2, fillColor: '#fff', fillOpacity: 1 })].concat(B.D.regions.filter(r => r.city === id).map(r => () => L.polygon(r.b.map(ll), { color: '#94A3B8', weight: 1, fillOpacity: 0 }))).concat(hs.map(h => () => L.polygon(h.b.map(ll), { color: '#fff', weight: 1, fillColor: h.status === 'تأیید شده' ? '#40BDBB' : '#B3E6E5', fillOpacity: .9 }).bindTooltip('محله ' + h.n))));
+    mini(U.$('#dm'), [() => L.polygon(c.b.map(ll), { color: '#3B5BDB', weight: 2, fillColor: '#fff', fillOpacity: 1 })].concat(B.D.regions.filter(r => r.city === id).map(r => () => L.polygon(r.b.map(ll), { color: '#94A3B8', weight: 1, fillOpacity: 0 }))).concat(hs.map(h => () => L.polygon(h.b.map(ll), { color: '#fff', weight: 1, fillColor: h.status === 'تأیید شده' ? '#40BDBB' : '#B3E6E5', fillOpacity: .9 }).bindTooltip('محله ' + h.n))));
   }
   function hood(id) {
     const h = B.hoodBy[id]; const c = B.cityBy[h.city]; const p = B.provBy[c.p]; const r = B.regionBy[h.reg] || { n: '' };
@@ -50,16 +50,15 @@
       ${q ? `<div class="card pad" style="border-color:var(--s-100);background:var(--s-50);display:flex;gap:12px;align-items:center">${U.av(q.x)}<div style="flex:1"><b>${q.x.n}</b> این محله را ${fa(q.age)} روز پیش برای تأیید فرستاده است.</div></div>` : ''}
       <section class="card pad"><div class="h2"><h2>فرم ثبت محله</h2><div class="grow"></div><b>${fa(h.steps)} از ۶ مرحله</b></div>
         <div class="formsteps" style="margin-top:10px">${B.STEP_NAMES.map((n, i) => `<div class="fs ${i < h.steps ? 'on' : ''}"><small>مرحله ${fa(i + 1)}</small><b>${n}</b><span>${i < h.steps ? ic('check', 'sm') + ' کامل' : 'خالی'}</span></div>`).join('')}</div></section>
-      ${kpis([['ساکنان', fa(h.pop), 'سال مرجع ۱۴۰۵'], ['بلوک', fa(h.blk || 0)], ['معبر', fa(h.streets)], ['ملک و اراضی', fa(h.props)], ['عوارض مکانی', fa(h.feats)]])}
-      <div class="grid g2"><div class="card pad"><div class="h2"><h2>نقشه‌ی محله</h2></div><div class="dmap" id="dm"></div></div>
-        <div class="card pad"><div class="h2"><h2>شاخص‌های پایه</h2><div class="grow"></div><small class="muted">از مرحله‌های ۲ و ۳ فرم</small></div>
-          <div class="fields">${[['مساحت', '۱۲۵٫۴ هکتار'], ['تراکم جمعیت', '۱۶۷٫۵ نفر در هکتار'], ['واحد ناپایدار', '۵٬۴۴۵'], ['ظرفیت نوسازی', '۴۵۰ واحد'], ['نرخ بیکاری', '۹٪'], ['تملک مسکن', '۶۲٪'], ['دسترسی فاضلاب', '۷۵٪'], ['سرانه فضای سبز', '۳٫۵ مترمربع'], ['دفتر تسهیل‌گری', 'فعال'], ['سطح مخاطرات', 'متوسط']].map(([a, b], i) => `<div><span>${a}</span><b>${i < h.steps * 2 ? b : '<span class="faint">ثبت نشده</span>'}</b></div>`).join('')}</div></div></div>
-      <div class="card pad"><div class="h2"><h2>تاریخچه</h2></div>${timeline(B.events.filter(e => e.hood === id).concat(B.events.filter(e => e.city === h.city)).slice(0, 6))}</div></div>`;
+      ${U.hoodDetail(h)}
+      <div class="grid g2"><div class="card pad"><div class="h2"><h2>نقشه‌ی محله</h2><div class="grow"></div><small class="muted">${fa(h.streets)} معبر · ${fa(h.props)} ملک · ${fa(h.feats)} عارضه</small></div><div class="dmap" id="dm"></div></div>
+        <div class="card pad"><div class="h2"><h2>تاریخچه</h2></div>${timeline(B.events.filter(e => e.hood === id).concat(B.events.filter(e => e.city === h.city)).slice(0, 6))}</div></div></div>`;
+    U.hoodDetailCharts(h);
     const sts = B.D.streets.filter(s => s.h === id), pts = B.D.pts.filter(x => x.h === id), fts = B.D.feats.filter(f => f.h === id);
-    mini(U.$('#dm'), [() => L.polygon(h.b.map(ll), { color: '#007C7A', weight: 2, fillColor: '#E6F7F7', fillOpacity: .6 })]
-      .concat(sts.map(s => () => L.polyline(s.l.map(ll), { color: '#334155', weight: 3 }).bindTooltip(s.n)))
-      .concat(fts.map(f => () => L.polygon(f.b.map(ll), { color: '#40BDBB', weight: 1, fillColor: '#B3E6E5', fillOpacity: .9 }).bindTooltip(f.n)))
-      .concat(pts.map(x => () => L.circleMarker(ll(x.c), { radius: 4, color: '#fff', weight: 1, fillColor: '#1E40AF', fillOpacity: 1 }).bindTooltip('ملک ' + x.code))), L.polygon(h.b.map(ll)).getBounds());
+    mini(U.$('#dm'), [() => L.polygon(h.b.map(ll), { color: '#1E40AF', weight: 2, fillColor: '#EEF2FF', fillOpacity: .5 })]
+      .concat(sts.map(s => () => L.polyline(s.l.map(ll), { color: '#F59F00', weight: 3 }).bindTooltip(s.n)))
+      .concat(fts.map(f => () => L.polygon(f.b.map(ll), { color: '#F76707', weight: 1, fillColor: '#FFC08A', fillOpacity: .6 }).bindTooltip(f.n)))
+      .concat(pts.map(x => () => L.circleMarker(ll(x.c), { radius: 4, color: '#fff', weight: 1, fillColor: '#3B5BDB', fillOpacity: 1 }).bindTooltip('ملک ' + x.code))), L.polygon(h.b.map(ll)).getBounds());
   }
   function expert(id) {
     const x = B.expBy[id]; const evs = B.events.filter(e => e.x.id === id);
@@ -84,7 +83,7 @@
         <div style="display:flex;justify-content:space-between;font-size:12px" class="muted"><span>شروع: ${fa(Math.abs(p.startM))} ماه پیش</span><span>پایان: ${p.endM > 0 ? fa(p.endM) + ' ماه دیگر' : 'گذشته'}</span></div></section>
       <div class="grid g2"><div class="card pad"><div class="h2"><h2>مراحل</h2></div><div class="tl">${ms.map(([t, m, done]) => `<div class="it"><span class="av ${done ? '' : 'b'}" style="${done ? '' : 'background:var(--sunk);color:var(--faint)'}">${done ? ic('check', 'sm') : ic('clock', 'sm')}</span><div><b>${t}</b><small>${m <= 0 ? fa(-m) + ' ماه پیش' : fa(m) + ' ماه دیگر'}</small></div></div>`).join('')}</div></div>
         <div class="card pad"><div class="h2"><h2>موقعیت</h2></div><div class="dmap" id="dm"></div></div></div></div>`;
-    mini(U.$('#dm'), [() => L.polygon(h.b.map(ll), { color: '#007C7A', weight: 2, fillColor: '#E6F7F7', fillOpacity: .5 })].concat(p.geom ? [() => L.polygon(p.geom.map(ll), { color: '#007C7A', weight: 2, dashArray: '5 4', fillColor: '#00ADAB', fillOpacity: .2 })] : [() => L.circleMarker(ll(p.c), { radius: 9, color: '#fff', weight: 2, fillColor: '#C2410C', fillOpacity: 1 })]));
+    mini(U.$('#dm'), [() => L.polygon(h.b.map(ll), { color: '#3B5BDB', weight: 2, fillColor: '#E6F7F7', fillOpacity: .5 })].concat(p.geom ? [() => L.polygon(p.geom.map(ll), { color: '#3B5BDB', weight: 2, dashArray: '5 4', fillColor: '#00ADAB', fillOpacity: .2 })] : [() => L.circleMarker(ll(p.c), { radius: 9, color: '#fff', weight: 2, fillColor: '#C2410C', fillOpacity: 1 })]));
   }
 
   /* ---------- router ---------- */

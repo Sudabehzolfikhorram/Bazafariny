@@ -47,9 +47,9 @@
 
   /* sequential teal ramp (light → dark) */
   const RAMP = ['#EEF4F4', '#D2E8E7', '#A9D5D3', '#78BCBA', '#459F9D', '#257E7C', '#155E5C'];
-  const CAT = { hood: '#0CA5A3', prop: '#3B5BDB', street: '#F59F00', feat: '#F76707', exec: '#495057', part: '#4DABF7', alert: '#C92A2A' };
+  const CAT = { hood: '#0CA5A3', prop: '#3B5BDB', street: '#F59F00', feat: '#F76707', exec: '#74B816', part: '#4DABF7', alert: '#C92A2A' };
   const ramp = t => RAMP[Math.max(0, Math.min(RAMP.length - 1, Math.floor(t * RAMP.length)))];
-  const inkOn = c => (RAMP.indexOf(c) >= 4 ? '#fff' : '#0F172A');
+  const inkOn = c => (RAMP.indexOf(c) >= 4 ? '#fff' : '#1E40AF');
 
   /* tooltip */
   let tipEl;
