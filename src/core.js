@@ -69,13 +69,14 @@
     ['g', 'مدیریت'], ['users', 'کاربران و کارشناسان'], ['money', 'منابع مالی'], ['law', 'قوانین']];
   const LOGO = `<svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true">${[[17, 3], [10, 10], [24, 10], [3, 17], [17, 17], [31, 17], [10, 24], [24, 24], [17, 31]].map(([x, y], i) => `<rect x="${x - 3.6}" y="${y - 3.6}" width="7.2" height="7.2" rx="1.6" transform="rotate(45 ${x} ${y})" fill="${i % 2 ? '#00ADAB' : '#007C7A'}"/>`).join('')}</svg>`;
   function shell() {
-    document.body.innerHTML = `<div class="app"><aside class="side" aria-label="منوی اصلی">
+    document.documentElement.lang = 'fa'; document.documentElement.dir = 'rtl';
+    document.body.insertAdjacentHTML('beforeend', `<div class="app"><aside class="side" aria-label="منوی اصلی">
       <div class="brand">${LOGO}<div><b>بازآفرینی‌یار</b><small>شرکت بازآفرینی شهری ایران</small></div></div>
       ${NAV.map(([i, t, on, tag]) => i === 'g' ? `<div class="grp">${t}</div>` : `<a class="nav ${on ? 'on' : ''}" href="#" title="${t}">${ic(i)}<span>${t}</span>${tag ? `<em class="tag">${tag}</em>` : ''}</a>`).join('')}
     </aside><div class="main"><header class="top" id="top"></header><main class="page" id="page"></main></div></div>
     <nav class="switch" aria-label="انتخاب مدل">
       <a href="#m1" data-m="m1">مدل الف<span class="long"> · نقشه</span></a><a href="#m2" data-m="m2">مدل ب<span class="long"> · اطلس</span></a>
-      <span class="sep arch"></span><a class="arch" href="archive/">کانسپت‌های قبلی</a></nav>`;
+      <span class="sep arch"></span><a class="arch" href="archive/index.html">کانسپت‌های قبلی</a></nav>`);
     $$('.nav').forEach(a => a.addEventListener('click', e => e.preventDefault()));
   }
   function topbar(title, sub) {

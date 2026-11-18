@@ -408,8 +408,14 @@ button.gr:hover{background:var(--sunk)}
 .ma.is3d .iso3{opacity:1;pointer-events:auto}
 .ma.is3d #map1{opacity:0;pointer-events:none}
 .ma .iso3 svg{width:100%;height:100%;display:block}
+.ma .atl{position:absolute;top:0;bottom:0;left:0;right:392px;padding:70px 40px 80px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:#F8FAFC;opacity:0;pointer-events:none;transition:opacity .35s ease}
+.ma .atl svg{width:100%;max-height:calc(100% - 30px);display:block}
+.ma.isatl .atl{opacity:1;pointer-events:auto}.ma.isatl #map1{opacity:0;pointer-events:none}
+.ma.isatl .legend,.ma.isatl .zoom,.ma.isatl .tools,.ma.isatl .layersBtn{display:none}
+.atl .atile{cursor:pointer}.atl .atile:hover rect:first-child{filter:brightness(.96)}.atl .atile:focus-visible{outline:none}.atl .atile:focus-visible rect:first-child{stroke:#0F172A;stroke-width:3}
+.atl-key{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;font-size:12px;color:var(--muted)}.atl-key span{display:flex;align-items:center;gap:6px}.atl-key i{width:12px;height:12px;border-radius:3px;display:inline-block}
 .ma .ctx{top:16px;right:16px;bottom:16px;width:376px;display:flex;flex-direction:column;overflow:hidden}
-.ma .viewsw{left:16px;bottom:16px;padding:4px;display:flex;gap:2px}
+.ma .viewsw{left:calc((100% - 392px)/2);top:16px;transform:translateX(-50%);padding:4px;display:flex;gap:2px}
 .ma .viewsw button{padding:7px 14px;border-radius:12px;font-size:12.5px;font-weight:600;color:var(--muted);display:flex;align-items:center;gap:6px}
 .ma .viewsw button.on{background:var(--ink);color:#fff}
 .ma .layersBtn{top:16px;left:62px;display:flex;align-items:center;gap:8px;padding:9px 14px;font-size:12.5px;font-weight:600;color:var(--ink-2)}
@@ -425,7 +431,7 @@ button.gr:hover{background:var(--sunk)}
 .ma.is3d .legend,.ma.is3d .layersBtn,.ma.is3d .tools,.ma.is3d .zoom{display:none}
 .ma .time3 .months{flex:1}
 .ma .time3 .months button i{background:#E2E8F0}.ma .time3 .months button.past i{background:#C5CDF5}.ma .time3 .months button.on i{background:#5466C4}
-.ma .hint{position:absolute;z-index:450;top:16px;left:50%;transform:translateX(-50%);font-size:12px;color:var(--muted);background:rgba(255,255,255,.92);border:1px solid var(--line);border-radius:99px;padding:4px 12px}
+.ma .hint{position:absolute;z-index:450;top:70px;left:50%;transform:translateX(-50%);font-size:12px;color:var(--muted);background:rgba(255,255,255,.92);border:1px solid var(--line);border-radius:99px;padding:4px 12px}
 .iso3 .prism.sel .pt{fill:#1E40AF}
 @media (max-width:760px){
   .ma .stage{height:auto;min-height:0;display:flex;flex-direction:column;background:none;border:0;border-radius:0;overflow:visible}

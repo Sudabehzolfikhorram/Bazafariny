@@ -19,7 +19,7 @@
     U.$('#page').innerHTML = `<div class="ma" id="ma">
       <section class="stage" aria-label="نقشه">
         <div id="map1"></div>
-        <div class="iso3" id="iso3"><svg id="iso" class="iso" preserveAspectRatio="xMidYMid meet"></svg></div>
+        <div class="iso3" id="iso3"><svg id="iso" class="iso" preserveAspectRatio="xMidYMid meet"></svg></div><div class="atl" id="atl"></div>
         <aside class="float ctx" id="ctx" aria-live="polite"></aside>
         <button class="float layersBtn" id="layersBtn" aria-expanded="false">${ic('layers', 'sm')} لایه‌ها و رنگ نقشه</button>
         <div class="float tools" id="tools" role="group" aria-label="لایه‌ها" hidden>
@@ -33,7 +33,7 @@
         <div class="float legend" id="legend"></div>
         <div class="hint" id="hint">روی هر استان بزنید تا تا سطح محله و معبر پایین بروید</div>
         <div class="float time3" id="time3"><button class="play" id="play" aria-label="پخش روند">${ic('play', 'sm')}</button><div class="months" id="months"></div><div style="min-width:96px"><small class="muted">تا پایان</small><div style="font-weight:800" id="mlabel"></div></div></div>
-        <div class="float viewsw" role="tablist" aria-label="نوع نمایش"><button role="tab" data-v="2d" class="on">${ic('map', 'sm')} دوبعدی</button><button role="tab" data-v="3d">${ic('chart', 'sm')} سه‌بعدی و زمان</button></div>
+        <div class="float viewsw" role="tablist" aria-label="نوع نمایش"><button role="tab" data-v="2d" class="on">${ic('map', 'sm')} نقشه</button><button role="tab" data-v="sat">${ic('sat', 'sm')} ماهواره</button><button role="tab" data-v="3d">${ic('chart', 'sm')} سه‌بعدی و زمان</button><button role="tab" data-v="atlas">${ic('grid', 'sm')} اطلس استان‌ها</button></div>
       </section>
 
       <div class="sec-title" style="margin-top:28px"><span class="n">۲</span><h2>کارشناسان چه کرده‌اند؟</h2><p>بازه‌ی یک ماه اخیر</p></div>
@@ -78,7 +78,7 @@
     else if (s.lv === 2) drawCity(s.id, keepView);
     else if (s.lv === 3) drawRegion(s.id, keepView);
     else drawHood(s.id, keepView);
-    panel(); legend(); if (view === '3d') draw3d();
+    panel(); legend(); if (view === '3d') draw3d(); if (view === 'atlas') drawAtlas();
   }
 
   function drawCountry(keep) {
@@ -230,9 +230,11 @@
   }
   /* ---------- view switch ---------- */
   function setView(v) {
-    view = v; U.$('#ma').classList.toggle('is3d', v === '3d');
+    view = v; U.$('#ma').classList.toggle('is3d', v === '3d'); U.$('#ma').classList.toggle('isatl', v === 'atlas');
+    const sb = U.$('#satBtn'); const wantSat = v === 'sat'; if (sb && map) { sb.classList.toggle('off', !wantSat); sb.setAttribute('aria-pressed', wantSat); if (wantSat) sat.addTo(map).bringToBack(); else map.removeLayer(sat); }
+    if (v === 'atlas') drawAtlas();
     U.$$('.viewsw button').forEach(b => { b.classList.toggle('on', b.dataset.v === v); b.setAttribute('aria-selected', b.dataset.v === v); });
-    U.$('#hint').style.display = v === '3d' ? 'none' : (st.lv === 0 ? '' : 'none');
+    U.$('#hint').style.display = v === '3d' || v === 'atlas' ? 'none' : (st.lv === 0 ? '' : 'none');
     if (v === '3d') draw3d(); else { stop(); setTimeout(() => map.invalidateSize(), 50); }
   }
 
@@ -324,6 +326,30 @@
   function setMonth(m) { month = m; paint(m); months(); }
   function togglePlay() { if (playing) return stop(); if (month === 7) setMonth(0); U.$('#play').innerHTML = ic('pause', 'sm'); playing = setInterval(() => { if (month >= 7) return stop(); setMonth(month + 1); }, 900); }
   function stop() { clearInterval(playing); playing = null; const p = U.$('#play'); if (p) p.innerHTML = ic('play', 'sm'); }
-  addEventListener('resize', () => { if (view === '3d' && U.$('#iso')) draw3d(); });
+  addEventListener('resize', () => { if (view === '3d' && U.$('#iso')) draw3d(); if (view === 'atlas' && U.$('#atl')) drawAtlas(); });
+  /* ---------- atlas view: every province one equal tile, roughly in its geographic place ---------- */
+  function drawAtlas() {
+    const el = U.$('#atl'); if (!el) return;
+    const S = 96, G = 10, W = 7 * S + 6 * G, H = 5 * S + 4 * G;
+    const key = metric === 'completeness' ? 'completeness' : 'records';
+    const vals = B.provs.filter(p => p.has).map(p => p[key]); const mx = Math.max(...vals), mn = Math.min(...vals);
+    const selId = st.lv === 1 ? st.id : null;
+    el.innerHTML = `<svg viewBox="-4 -4 ${W + 8} ${H + 8}" role="img" aria-label="اطلس استان‌ها"><defs><pattern id="hatchA" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="7" height="7" fill="#F1F5F9"/><line x1="0" y1="0" x2="0" y2="7" stroke="#E2E8F0" stroke-width="2"/></pattern></defs>
+      ${B.provs.map(p => { const [c, r] = p.grid; const X = c * (S + G), y = r * (S + G);
+        const t = p.has ? (p[key] - mn) / ((mx - mn) || 1) : 0; const fill = p.has ? U.ramp(t * .999) : 'url(#hatchA)'; const ink = p.has ? U.inkOn(fill) : '#94A3B8';
+        return `<g class="atile ${p.id === selId ? 'sel' : ''}" data-id="${p.id}" tabindex="0" role="button" aria-label="${p.fa}">
+          <rect x="${X}" y="${y}" width="${S}" height="${S}" rx="14" fill="${fill}" stroke="${p.id === selId ? '#0F172A' : p.has ? 'none' : '#E2E8F0'}" stroke-width="${p.id === selId ? 3 : 1}"/>
+          <text x="${X + S - 10}" y="${y + 22}" direction="rtl" font-size="12" font-weight="700" fill="${ink}">${esc(p.short)}</text>
+          ${p.has ? `<text x="${X + S - 10}" y="${y + 56}" direction="rtl" font-size="20" font-weight="800" fill="${ink}">${key === 'completeness' ? pct(p[key]) : fa(p[key])}</text>
+          <rect x="${X + 10}" y="${y + S - 18}" width="${S - 20}" height="5" rx="2.5" fill="${ink === '#fff' ? 'rgba(255,255,255,.3)' : 'rgba(15,23,42,.08)'}"/><rect x="${X + 10 + (S - 20) * (1 - p.completeness / 100)}" y="${y + S - 18}" width="${(S - 20) * p.completeness / 100}" height="5" rx="2.5" fill="${ink === '#fff' ? '#fff' : '#0F172A'}"/>`
+          : `<text x="${X + S - 10}" y="${y + 56}" direction="rtl" font-size="11.5" fill="#94A3B8">بدون داده</text>`}
+          ${p.pending ? `<circle cx="${X + 15}" cy="${y + 17}" r="9" fill="#3B5BDB"/><text x="${X + 15}" y="${y + 21}" text-anchor="middle" font-size="10.5" font-weight="700" fill="#fff">${fa(p.pending)}</text>` : ''}</g>`; }).join('')}</svg>
+      <div class="atl-key"><span><i style="background:#0F172A;width:16px;height:4px"></i>نوار پایین: کامل‌بودن</span><span><i style="background:#3B5BDB;border-radius:50%"></i>منتظر تأیید</span><span><i class="empty-hatch"></i>بدون داده</span><span>غرب در چپ، شرق در راست</span></div>`;
+    U.$$('#atl .atile').forEach(g => { const p = B.provBy[g.dataset.id];
+      g.onclick = () => { U.tip(null); go({ lv: 1, id: p.id }); };
+      g.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); g.onclick(); } };
+      g.onmousemove = e => U.tip(e, `<b>${p.fa}</b><br>${p.has ? `${fa(p.records)} رکورد · ${pct(p.completeness)} کامل` : 'هنوز داده‌ای ثبت نشده'}<br><small>برای دیدن پرونده کلیک کنید</small>`);
+      g.onmouseleave = () => U.tip(null); });
+  }
   window.MA = { render, destroy: () => { stop(); view = '2d'; month = 7; if (map) { map.remove(); map = null; } } };
 })();
