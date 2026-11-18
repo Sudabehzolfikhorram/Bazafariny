@@ -28,7 +28,7 @@
   M.parcels = parcels;
   M.pois = GEO.pois.filter(p => p.n || POI[p.k]).map((p, i) => ({ type: 'Feature', id: i, geometry: { type: 'Point', coordinates: p.ll }, properties: { k: p.k, n: p.n, ic: 'poi-' + (POI[p.k] ? p.k : 'shop'), lb: p.n ? 'pl-' + i : '', cat: poiInfo(p.k)[0], i } }));
 
-  const st = M.st = { view: 'map', color: 'cond', cond: new Set(Object.keys(COND)), use: new Set(Object.keys(USE)), fl: [1, 7], yb: [1310, 1404], year: 1404, play: null, satIn3d: false, narrowHL: false,
+  const st = M.st = { view: 'map', color: 'cond', cond: new Set(Object.keys(COND)), use: new Set(Object.keys(USE)), fl: [1, 7], yb: [1310, 1404], year: 1404, play: null, satIn3d: false, narrowHL: false, hazK: null, poiCat: '',
     lay: { bound: true, roads: true, labels: true, pois: true, haz: false, parcels: true, green: true } };
   const subs = []; M.on = fn => subs.push(fn); const emit = () => subs.forEach(fn => fn(st));
 
@@ -47,7 +47,7 @@
 
   /* ---------- label images (canvas → addImage) so Persian text renders without a glyph server ---------- */
   function textImage(text, o) {
-    o = Object.assign({ size: 12, weight: 700, color: '#334155', halo: '#ffffff', pad: 3, bg: null, haloW: 3.2 }, o);
+    o = Object.assign({ size: 12, weight: 600, color: '#334155', halo: '#ffffff', pad: 3, bg: null, haloW: 3.2 }, o);
     const pr = 2, cv = document.createElement('canvas'), x = cv.getContext('2d');
     const font = `${o.weight} ${o.size * pr}px Vazirmatn`;
     x.font = font; const w = Math.ceil(x.measureText(text).width) + (o.pad * 2 + 6) * pr, h = Math.ceil(o.size * 1.9 * pr);
@@ -93,7 +93,7 @@
 
     // decode satellite mosaics while the style loads
     const satReady = Promise.all(['ctx', 'core'].map(k => new Promise(res => { const im = new Image(); im.onload = () => { const cv = document.createElement('canvas'); cv.width = im.naturalWidth; cv.height = im.naturalHeight; cv.getContext('2d').drawImage(im, 0, 0); res([k, cv]); }; im.onerror = () => res([k, null]); im.src = SAT[k]; })));
-    const fontReady = (document.fonts && document.fonts.load) ? Promise.all([document.fonts.load('700 12px Vazirmatn'), document.fonts.load('600 12px Vazirmatn')]).catch(() => 0) : Promise.resolve();
+    const fontReady = (document.fonts && document.fonts.load) ? Promise.all([document.fonts.load('700 12px Vazirmatn'), document.fonts.load('500 12px Vazirmatn')]).catch(() => 0) : Promise.resolve();
 
     map.on('load', async () => {
       const [sats] = await Promise.all([satReady, fontReady]);
@@ -111,12 +111,12 @@
       // images
       const kinds = new Set(poiF.map(f => f.properties.k));
       kinds.forEach(k => { const im = iconImage(POI[k] ? k : 'shop'); const id = 'poi-' + (POI[k] ? k : 'shop'); if (!map.hasImage(id)) map.addImage(id, im.img, { pixelRatio: im.pr }); });
-      poiF.forEach(f => { if (f.properties.n) { const im = textImage(f.properties.n, { size: 11, weight: 600, color: '#475569' }); map.addImage(f.properties.lb, im.img, { pixelRatio: im.pr }); } });
+      poiF.forEach(f => { if (f.properties.n) { const im = textImage(f.properties.n, { size: 11, weight: 500, color: '#475569' }); map.addImage(f.properties.lb, im.img, { pixelRatio: im.pr }); } });
       const rnames = new Set();
       GEO.roads.features.forEach(f => { const p = f.properties; if (p.n && p.h !== 'busway' && !/^(اول|دوم|سوم|چهارم|یکم|پنجم|فرعی)$/.test(p.n)) rnames.add(p.n); });
       const big = new Set(['مصطفی خمینی', 'مولوی', 'ری', 'پانزده خرداد', 'خیابان ری', 'بلوار قیام', 'خراسان']);
-      [...rnames].forEach(n => { const im = textImage(n, { size: big.has(n) ? 12.5 : 11, weight: big.has(n) ? 800 : 600, color: big.has(n) ? '#1E293B' : '#475569' }); map.addImage('rl-' + n, im.img, { pixelRatio: im.pr }); });
-      const satLbl = new Set(); [...rnames].forEach(n => { const im = textImage(n, { size: big.has(n) ? 12.5 : 11, weight: 700, color: '#ffffff', halo: 'rgba(15,23,42,.75)', haloW: 3 }); map.addImage('rs-' + n, im.img, { pixelRatio: im.pr }); satLbl.add(n); });
+      [...rnames].forEach(n => { const im = textImage(n, { size: big.has(n) ? 12.5 : 11, weight: big.has(n) ? 700 : 500, color: big.has(n) ? '#1E293B' : '#475569' }); map.addImage('rl-' + n, im.img, { pixelRatio: im.pr }); });
+      const satLbl = new Set(); [...rnames].forEach(n => { const im = textImage(n, { size: big.has(n) ? 12.5 : 11, weight: 600, color: '#ffffff', halo: 'rgba(15,23,42,.75)', haloW: 3 }); map.addImage('rs-' + n, im.img, { pixelRatio: im.pr }); satLbl.add(n); });
 
       const L = (o, before) => map.addLayer(o, before);
       // base
@@ -131,8 +131,8 @@
       ['nar', 'loc', 'sec', 'main'].forEach(k => L({ id: 'rf-' + k, type: 'line', source: 'roads', filter: ['==', ['get', 'k'], k], layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': k === 'main' ? '#FFFFFF' : k === 'sec' ? '#FFFDF7' : '#FFFFFF', 'line-width': wexp(k, 0) } }));
       L({ id: 'r-narrow', type: 'line', source: 'roads', filter: ['all', ['==', ['get', 'k'], 'nar'], ['==', ['get', 'in'], 1]], layout: { visibility: 'none', 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': '#F59F00', 'line-width': ['interpolate', ['linear'], ['zoom'], 14, 1.5, 17, 4, 19, 9] } });
       // hazards
-      L({ id: 'haz-f', type: 'fill', source: 'haz', layout: { visibility: 'none' }, paint: { 'fill-color': ['match', ['get', 'k'], 'fault', HAZ.fault.c, 'flood', HAZ.flood.c, 'slope', HAZ.slope.c, HAZ.power.c], 'fill-opacity': 0.2 } });
-      L({ id: 'haz-l', type: 'line', source: 'haz', layout: { visibility: 'none' }, paint: { 'line-color': ['match', ['get', 'k'], 'fault', HAZ.fault.c, 'flood', HAZ.flood.c, 'slope', HAZ.slope.c, HAZ.power.c], 'line-width': 1.6, 'line-dasharray': [3, 2] } });
+      L({ id: 'haz-f', type: 'fill', source: 'haz', layout: { visibility: 'none' }, paint: { 'fill-color': ['match', ['get', 'k'], 'fault', HAZ.fault.c, 'flood', HAZ.flood.c, 'slope', HAZ.slope.c, HAZ.power.c], 'fill-opacity': 0.26 } });
+      L({ id: 'haz-l', type: 'line', source: 'haz', layout: { visibility: 'none' }, paint: { 'line-color': ['match', ['get', 'k'], 'fault', HAZ.fault.c, 'flood', HAZ.flood.c, 'slope', HAZ.slope.c, HAZ.power.c], 'line-width': 2.2, 'line-dasharray': [3, 2] } });
       // parcels 2D
       L({ id: 'p-fill', type: 'fill', source: 'parcels', filter: pfilter(), paint: { 'fill-color': colorExpr(), 'fill-opacity': ['case', ['boolean', ['feature-state', 'hover'], false], 1, 0.86] } });
       L({ id: 'p-line', type: 'line', source: 'parcels', filter: pfilter(), paint: { 'line-color': '#FFFFFF', 'line-width': ['interpolate', ['linear'], ['zoom'], 15, 0.3, 18, 1.2], 'line-opacity': 0.9 } });
@@ -144,13 +144,16 @@
       L({ id: 'mask', type: 'fill', source: 'mask', paint: { 'fill-color': '#F3F5F8', 'fill-opacity': 0.42 } });
       L({ id: 'b-glow', type: 'line', source: 'bound', paint: { 'line-color': '#00ADAB', 'line-width': 9, 'line-opacity': 0.16, 'line-blur': 3 } });
       L({ id: 'b-line', type: 'line', source: 'bound', paint: { 'line-color': '#0A9593', 'line-width': 2.4, 'line-dasharray': [2.4, 1.4] } });
-      L({ id: 'p-hl', type: 'line', source: 'parcels', filter: ['==', ['get', 'i'], -1], paint: { 'line-color': '#1E40AF', 'line-width': 2.6 } });
+      L({ id: 'p-hl', type: 'line', source: 'parcels', filter: ['==', ['get', 'i'], -1], paint: { 'line-color': '#4C6EF5', 'line-width': 2, 'line-opacity': .85 } });
+      L({ id: 'p-sel', type: 'line', source: 'parcels', filter: ['==', ['get', 'i'], -1], paint: { 'line-color': '#1E40AF', 'line-width': 3.2 } });
       // labels
       L({ id: 'r-lbl', type: 'symbol', source: 'roads', filter: ['in', ['get', 'n'], ['literal', [...rnames]]], layout: { 'icon-image': ['concat', 'rl-', ['get', 'n']], 'symbol-placement': 'line', 'symbol-spacing': 260, 'icon-rotation-alignment': 'map', 'icon-pitch-alignment': 'viewport', 'icon-keep-upright': true, 'icon-allow-overlap': false, 'icon-padding': 2, 'symbol-sort-key': ['match', ['get', 'k'], 'main', 0, 'sec', 1, 2] }, paint: { 'icon-opacity': ['interpolate', ['linear'], ['zoom'], 14.8, ['match', ['get', 'k'], 'main', 1, 0], 15.6, 1] } });
       L({ id: 'r-lbl-s', type: 'symbol', source: 'roads', filter: ['in', ['get', 'n'], ['literal', [...rnames]]], layout: { visibility: 'none', 'icon-image': ['concat', 'rs-', ['get', 'n']], 'symbol-placement': 'line', 'symbol-spacing': 260, 'icon-rotation-alignment': 'map', 'icon-pitch-alignment': 'viewport', 'icon-keep-upright': true, 'icon-padding': 2, 'symbol-sort-key': ['match', ['get', 'k'], 'main', 0, 'sec', 1, 2] } });
       L({ id: 'poi-i', type: 'symbol', source: 'pois', layout: { 'icon-image': ['get', 'ic'], 'icon-size': ['interpolate', ['linear'], ['zoom'], 15, 0.72, 18, 1], 'icon-allow-overlap': ['step', ['zoom'], false, 17, true], 'symbol-sort-key': ['match', ['get', 'cat'], 'آموزشی', 0, 'درمانی', 0, 'مذهبی', 1, 2] } });
       L({ id: 'poi-l', type: 'symbol', source: 'pois', filter: ['!=', ['get', 'lb'], ''], minzoom: 16.6, layout: { 'icon-image': ['get', 'lb'], 'icon-offset': [0, 21], 'icon-optional': false, 'icon-padding': 1 } });
 
+      // hazard zones sit above the 2D parcels (they were hidden under them) but below the 3D extrusions
+      map.moveLayer('haz-f', 'p-3d'); map.moveLayer('haz-l', 'p-3d');
       bindInteractions(map);
       M.ready = true;
       setView(st.view, true);
@@ -179,7 +182,8 @@
         tip.style.display = 'block';
         const W = map.getContainer().clientWidth;
         const x = e.point.x, y = e.point.y;
-        tip.style.left = (x > W - 230 ? x - 206 : x + 16) + 'px'; tip.style.top = (y + 16) + 'px';
+        const H = map.getContainer().clientHeight;
+        tip.style.left = (x > W - 230 ? x - 206 : x + 16) + 'px'; tip.style.top = (y > H - 150 ? y - tip.offsetHeight - 12 : y + 16) + 'px';
       });
       map.on('mouseleave', id, () => { if (hoverId !== null) map.setFeatureState({ source: 'parcels', id: hoverId }, { hover: false }); hoverId = null; map.setFilter('p-hl', ['==', ['get', 'i'], -1]); tip.style.display = 'none'; map.getCanvas().style.cursor = ''; });
       map.on('click', id, e => { if (map.queryRenderedFeatures(e.point, { layers: ['poi-i'] }).length) return; showParcel(e.features[0].properties.i); });
@@ -198,22 +202,25 @@
     const pg = pri >= 60 ? 'red' : pri >= 35 ? 'amber' : 'green';
     det(`<div class="hd"><span class="ii" style="width:36px;height:36px;border-radius:10px;display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,${c.c}99,${c.c})">${U.ic(p.u === 'com' ? 'shop' : p.u === 'srv' ? 'build' : 'home', 's')}</span><div><b>پلاک ${toFa(p.code.replace('SR-', ''))}</b><small>${u.t} · ${c.t}</small></div><button class="x" data-x>${U.ic('x', 's')}</button></div>
       <div class="bd"><div class="kv"><div><small>طبقات</small><b>${U.fi(p.f)} طبقه</b></div><div><small>ارتفاع تقریبی</small><b>${U.fa(p.h, 1)} متر</b></div><div><small>سال ساخت</small><b>${toFa(p.yb)}</b></div><div><small>مساحت عرصه</small><b>${U.fi(p.a)} مترمربع</b></div></div>
-      <div style="margin:10px 0 6px;font-size:11.5px;color:var(--tx3);font-weight:600">پهنه‌ی مخاطره</div><div style="display:flex;gap:6px;flex-wrap:wrap">${hz}</div>
-      <div style="margin:12px 0 4px;display:flex;justify-content:space-between;font-size:11.5px"><span style="color:var(--tx3);font-weight:600">اولویت نوسازی (برآورد)</span><b>${U.fi(pri)} از ۱۰۰</b></div><div class="kp" style="padding:0;border:0;box-shadow:none"><div class="bar" style="margin:0"><i style="width:${pri}%;background:${U.grad(pg, '90deg')}"></i></div></div>
+      <div style="margin:10px 0 6px;font-size:11.5px;color:var(--tx3);font-weight:500">پهنه‌ی مخاطره</div><div style="display:flex;gap:6px;flex-wrap:wrap">${hz}</div>
+      <div style="margin:12px 0 4px;display:flex;justify-content:space-between;font-size:11.5px"><span style="color:var(--tx3);font-weight:500">اولویت نوسازی (برآورد)</span><b>${U.fi(pri)} از ۱۰۰</b></div><div class="kp" style="padding:0;border:0;box-shadow:none"><div class="bar" style="margin:0"><i style="width:${pri}%;background:${U.grad(pg, '90deg')}"></i></div></div>
       ${p.rn ? `<div class="note" style="margin-top:10px">${U.ic('build', 's')}<span>در برنامه‌ی نوسازی نمونه، سال ${toFa(p.rn)}</span></div>` : ''}
       <div class="ft"><button class="btn sm" data-zoom>${U.ic('target', 'xs')}بزرگ‌نمایی</button><button class="btn sm gh" data-same>${U.ic('filter', 'xs')}فقط «${c.t}»</button></div></div>`);
     const el = U.$('.mdet');
     el.querySelector('[data-zoom]').onclick = () => M.map.easeTo({ center: p.cx, zoom: 18.6, duration: 600 });
     el.querySelector('[data-same]').onclick = () => { st.cond = new Set([p.c]); apply(); emit(); };
-    M.map.setFilter('p-hl', ['==', ['get', 'i'], p.i]);
+    M.map.setFilter('p-sel', ['==', ['get', 'i'], p.i]);
   }
   function showPoi(i) {
     const f = M.pois[i], p = f.properties, [cat, ic, col] = poiInfo(p.k);
     det(`<div class="hd"><span style="width:36px;height:36px;border-radius:10px;display:grid;place-items:center;color:#fff;background:${col}">${U.ic(ic, 's')}</span><div><b>${U.esc(p.n || cat)}</b><small>${cat}</small></div><button class="x" data-x>${U.ic('x', 's')}</button></div>
       <div class="bd"><div class="kv"><div><small>دسته</small><b>${cat}</b></div><div><small>منبع</small><b>OpenStreetMap</b></div></div><div class="ft"><button class="btn sm" data-zoom>${U.ic('target', 'xs')}بزرگ‌نمایی</button></div></div>`);
     U.$('.mdet [data-zoom]').onclick = () => M.map.easeTo({ center: f.geometry.coordinates, zoom: 18.4, duration: 600 });
+    M.map.setFilter('p-sel', ['==', ['get', 'i'], -1]);
   }
-  function det(html) { const el = U.$('.mdet'); el.innerHTML = html; el.classList.add('on'); el.querySelector('[data-x]').onclick = () => { el.classList.remove('on'); M.map.setFilter('p-hl', ['==', ['get', 'i'], -1]); }; }
+  function det(html) { const el = U.$('.mdet'); el.innerHTML = html; el.classList.add('on'); el.querySelector('[data-x]').onclick = closeDet; }
+  function closeDet() { const el = U.$('.mdet'); if (el) el.classList.remove('on'); if (M.ready) M.map.setFilter('p-sel', ['==', ['get', 'i'], -1]); }
+  M.closeDet = closeDet;
   M.showParcel = showParcel; M.showPoi = showPoi;
   M.flyPoi = i => { const f = M.pois[i]; if (!f) return; if (st.view === 'atlas') setView('map'); M.map.easeTo({ center: f.geometry.coordinates, zoom: 18.2, duration: 700 }); showPoi(i); };
 
@@ -238,11 +245,13 @@
     ['nar', 'loc', 'sec', 'main'].forEach(k => { vis('rc-' + k, !sat && st.lay.roads); vis('rf-' + k, !sat && st.lay.roads); });
     vis('r-narrow', st.narrowHL);
     vis('p-fill', !three && st.lay.parcels); vis('p-line', !three && st.lay.parcels); vis('p-dim', !three && st.lay.parcels);
-    map.setPaintProperty('p-fill', 'fill-opacity', sat ? ['case', ['boolean', ['feature-state', 'hover'], false], 0.85, 0.5] : ['case', ['boolean', ['feature-state', 'hover'], false], 1, 0.86]);
+    map.setPaintProperty('p-fill', 'fill-opacity', sat ? ['case', ['boolean', ['feature-state', 'hover'], false], 0.85, 0.5] : ['case', ['boolean', ['feature-state', 'hover'], false], 1, st.lay.haz ? 0.62 : 0.86]);
     map.setPaintProperty('p-line', 'line-opacity', sat ? 0.55 : 0.9);
     map.setPaintProperty('p-dim', 'fill-opacity', sat ? 0 : 0.55);
     vis('p-3d', three && st.lay.parcels); vis('ctx-3d', three && !sat);
     vis('haz-f', st.lay.haz); vis('haz-l', st.lay.haz);
+    const hf = st.hazK ? ['==', ['get', 'k'], st.hazK] : null; map.setFilter('haz-f', hf); map.setFilter('haz-l', hf);
+    const cf = st.poiCat ? ['==', ['get', 'cat'], st.poiCat] : null; map.setFilter('poi-i', cf); map.setFilter('poi-l', cf ? ['all', ['!=', ['get', 'lb'], ''], cf] : ['!=', ['get', 'lb'], '']);
     map.setPaintProperty('mask', 'fill-opacity', sat ? 0.32 : 0.42);
     map.setPaintProperty('mask', 'fill-color', sat ? '#0F172A' : '#F3F5F8');
     map.setPaintProperty('b-line', 'line-color', sat ? '#FFFFFF' : '#0A9593');
@@ -262,7 +271,8 @@
     U.$('.lgd').style.display = v === 'atlas' ? 'none' : '';
     U.$('.zc').style.display = v === 'atlas' ? 'none' : '';
     U.$('.msearch').style.display = v === 'atlas' ? 'none' : '';
-    if (v === 'atlas') { M.atlas && M.atlas.show(); const d = U.$('.mdet'); if (d) d.classList.remove('on'); const tp = U.$('.mtip'); if (tp) tp.style.display = 'none'; }
+    const mc = U.$('#mapcard'); if (mc) mc.classList.toggle('atl', v === 'atlas');
+    if (v === 'atlas') { M.atlas && M.atlas.show(); closeDet(); const tp = U.$('.mtip'); if (tp) tp.style.display = 'none'; }
     if (!M.ready) return;
     if (v === '3d' && prev !== '3d') M.map.easeTo({ pitch: 58, bearing: -24, zoom: Math.max(M.map.getZoom(), 16.2), duration: silent ? 0 : 650 });
     if (v !== '3d' && v !== 'atlas' && (M.map.getPitch() > 1 || Math.abs(M.map.getBearing()) > 1)) M.map.easeTo({ pitch: 0, bearing: 0, duration: silent ? 0 : 500 });
@@ -278,11 +288,12 @@
     let h = '';
     if (st.color === 'cond') h = `<div class="lt"><span>وضعیت ابنیه</span><span class="muted">پلاک</span></div>` + Object.entries(COND).map(([k, o]) => `<div class="li ${st.cond.has(k) ? '' : 'off'}" data-lc="${k}"><i style="background:${o.c}"></i>${o.t}<b>${U.fi(cnt[k] || 0)}</b></div>`).join('');
     else if (st.color === 'use') h = `<div class="lt"><span>کاربری</span><span class="muted">پلاک</span></div>` + Object.entries(USE).map(([k, o]) => `<div class="li ${st.use.has(k) ? '' : 'off'}" data-lu="${k}"><i style="background:${o.c}"></i>${o.t}<b>${U.fi(cnt[k] || 0)}</b></div>`).join('');
-    else if (st.color === 'floors') h = `<div class="lt"><span>تعداد طبقات</span></div><div class="ramp" style="background:linear-gradient(90deg,#1E40AF,#2FA8B4,#A9DCE6,#DCEFF5)"></div><div class="rl"><span>۷</span><span>۴</span><span>۱</span></div>`;
-    else h = `<div class="lt"><span>سال ساخت</span></div><div class="ramp" style="background:linear-gradient(90deg,#2F5FD0,#8CC3F2,#E9EDF2,#F7C46B,#F28A3C)"></div><div class="rl"><span>۱۴۰۴</span><span>۱۳۶۵</span><span>۱۳۱۰</span></div>`;
+    else if (st.color === 'floors') h = `<div class="lt"><span>تعداد طبقات</span></div><div class="ramp" style="background:linear-gradient(270deg,#DCEFF5,#A9DCE6 17%,#2FA8B4 50%,#2D5FB6 83%,#1E40AF)"></div><div class="rl"><span>۱ طبقه</span><span>۴</span><span>۷ طبقه</span></div>`;
+    else h = `<div class="lt"><span>سال ساخت</span></div><div class="ramp" style="background:linear-gradient(270deg,#F28A3C 0%,#F7C46B 32%,#E9EDF2 58.5%,#8CC3F2 80%,#2F5FD0 100%)"></div><div class="rl"><span>۱۳۱۰</span><span>۱۳۵۷</span><span>۱۴۰۴</span></div>`;
     if (st.view === '3d' && st.year > 1405) h += `<div class="li" style="margin-top:4px"><i style="background:#3CC6C3"></i>نوسازی برنامه‌ریزی‌شده</div>`;
     const ex = [];
-    if (st.lay.haz) ex.push(...Object.values(HAZ).map(o => `<div class="li"><i style="background:${o.c}33;border:1.5px dashed ${o.c}"></i>${o.t}</div>`));
+    if (st.lay.haz) { ex.push(...Object.entries(HAZ).filter(([k]) => !st.hazK || k === st.hazK).map(([, o]) => `<div class="li"><i style="background:${o.c}33;border:1.5px dashed ${o.c}"></i>${o.t}</div>`)); if (st.hazK) ex.push(`<button class="lclr" data-hzclr>نمایش همه‌ی مخاطرات</button>`); }
+    if (st.lay.pois && st.poiCat) { const pc = Object.values(POI).find(x => x[0] === st.poiCat) || poiInfo(''); ex.push(`<div class="li"><i style="background:${pc[2]};border-radius:50%"></i>خدمات: ${st.poiCat}</div><button class="lclr" data-poiclr>نمایش همه‌ی خدمات</button>`); }
     if (st.narrowHL) ex.push(`<div class="li"><i class="ln" style="background:#F59F00"></i>معابر کمتر از ۶ متر</div>`);
     ex.push(`<div class="li"><i class="ln" style="background:${st.view === 'sat' ? '#94A3B8' : '#0A9593'}"></i>مرز محله</div>`);
     el.innerHTML = h + `<div style="border-top:1px dashed var(--ln);margin-top:6px;padding-top:6px">${ex.join('')}</div>`;
@@ -330,5 +341,16 @@
     M.landmarks = lm;
     return out;
   };
-  M.flyTo = (c, z) => { if (st.view === 'atlas') setView('map'); M.map.easeTo({ center: c, zoom: z || 17.8, duration: 700 }); };
+  // frame a set of features (hazard zones, a service category) so the result of a filter is always in view
+  function fitCoords(pts) {
+    if (!pts.length || !M.ready) return;
+    let x0 = 180, y0 = 90, x1 = -180, y1 = -90; pts.forEach(([x, y]) => { x0 = Math.min(x0, x); y0 = Math.min(y0, y); x1 = Math.max(x1, x); y1 = Math.max(y1, y); });
+    if (st.view === 'atlas') setView('map');
+    closeDet();
+    M.map.fitBounds([[x0, y0], [x1, y1]], { padding: { top: 70, bottom: 60, left: 70, right: 220 }, maxZoom: 17.6, pitch: st.view === '3d' ? 58 : 0, duration: 650 });
+  }
+  const flat = g => { const o = []; const walk = a => { if (typeof a[0] === 'number') o.push(a); else a.forEach(walk); }; walk(g.coordinates); return o; };
+  M.focusHaz = k => fitCoords(hazPolys.filter(h => !k || h.properties.k === k).flatMap(h => flat(h.geometry)));
+  M.focusPoiCat = cat => fitCoords(M.pois.filter(f => !cat || f.properties.cat === cat).map(f => f.geometry.coordinates));
+  M.flyTo = (c, z) => { if (st.view === 'atlas') setView('map'); closeDet(); M.map.easeTo({ center: c, zoom: z || 17.8, duration: 700 }); };
 })();

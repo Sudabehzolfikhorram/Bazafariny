@@ -13,7 +13,7 @@ const path = require('path');
   await p.goto('file://' + file);
   await p.waitForFunction(() => window.M && M.ready, { timeout: 60000 }).catch(() => errs.push('map not ready'));
   await p.waitForTimeout(1500);
-  console.log('ready ms', Date.now() - t0);
+  console.log('ready ms', Date.now() - t0); console.log('report scrollHeight', await p.evaluate(() => document.querySelector('.view').scrollHeight));
   const shot = async n => p.screenshot({ path: `${od}/${n}.png` });
   await shot('01-top');
   const steps = process.argv[4] ? process.argv[4].split(',') : ['views', 'sections', 'entry'];
@@ -25,8 +25,8 @@ const path = require('path');
     }
   }
   if (steps.includes('sections')) {
-    for (const id of ['s-ov', 's-pc', 's-ph', 's-ec', 's-hz', 's-pj', 's-rp']) {
-      await p.evaluate(id => { const v = document.querySelector('.view'); v.style.scrollBehavior = 'auto'; v.scrollTop = document.getElementById(id).offsetTop - 8; }, id);
+    for (const id of ['s-ov', 's-ph', 's-ec', 's-hz', 's-pj']) {
+      await p.evaluate(id => { const v = document.querySelector('.view'); v.style.scrollBehavior = 'auto'; const el = document.getElementById(id); v.scrollTop = el.getBoundingClientRect().top - v.getBoundingClientRect().top + v.scrollTop - 58; }, id);
       await p.waitForTimeout(500); await shot('03-' + id);
     }
   }

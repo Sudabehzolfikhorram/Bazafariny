@@ -10,7 +10,7 @@ const path = require('path'), fs = require('fs');
   await p.goto('file://' + file);
   await p.waitForFunction(() => window.M && M.ready, { timeout: 60000 });
   await p.waitForTimeout(1200);
-  const html = await p.evaluate(() => R.printable(['s-map', 's-ov', 's-pc', 's-ph', 's-ec', 's-hz', 's-pj']));
+  const html = await p.evaluate(() => R.printable(['s-map', 's-ov', 's-ph', 's-ec', 's-hz', 's-pj']));
   fs.writeFileSync('out/report-print.html', html);
   console.log('printable bytes', html.length, 'imgs', (html.match(/<img /g) || []).length);
   const q = await b.newPage({ viewport: { width: 1280, height: 900 } });

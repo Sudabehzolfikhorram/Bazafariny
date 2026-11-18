@@ -93,14 +93,14 @@
     el.classList.add('on'); clearTimeout(tt); tt = setTimeout(() => el.classList.remove('on'), 2600);
   };
   U.src = s => ({
-    sirous: '<span class="src" title="«آشنایی با محله سیروس»">داده‌ی محله</span>',
-    fars: '<span class="src smp" title="از قالب «پایش محلات فرسوده»؛ مقدار نمونه">قالب پایش · نمونه</span>',
-    infor: '<span class="src smp" title="از قالب «سکونتگاه غیررسمی»؛ مقدار نمونه">قالب سکونتگاه · نمونه</span>',
-    haz: '<span class="src smp" title="از قالب «مخاطرات»؛ مقدار نمونه">قالب مخاطرات · نمونه</span>',
-    form: '<span class="src smp" title="مقدار نمونه‌ی فرم ایجاد محله">نمونه</span>',
-    osm: '<span class="src osm" title="OpenStreetMap">OSM</span>',
-    est: '<span class="src" title="برآورد از داده‌های نقشه">برآورد</span>',
-    map: '<span class="src osm" title="محاسبه‌شده از لایه‌های نقشه">محاسبه از نقشه</span>'
+    sirous: '<span class="src" data-tt="«آشنایی با محله سیروس»">داده‌ی محله</span>',
+    fars: '<span class="src smp" data-tt="از قالب «پایش محلات فرسوده»؛ مقدار نمونه">قالب پایش · نمونه</span>',
+    infor: '<span class="src smp" data-tt="از قالب «سکونتگاه غیررسمی»؛ مقدار نمونه">قالب سکونتگاه · نمونه</span>',
+    haz: '<span class="src smp" data-tt="از قالب «مخاطرات»؛ مقدار نمونه">قالب مخاطرات · نمونه</span>',
+    form: '<span class="src smp" data-tt="مقدار نمونه‌ی فرم ایجاد محله">نمونه</span>',
+    osm: '<span class="src osm" data-tt="OpenStreetMap">OSM</span>',
+    est: '<span class="src" data-tt="برآورد از داده‌های نقشه">برآورد</span>',
+    map: '<span class="src osm" data-tt="محاسبه‌شده از لایه‌های نقشه">محاسبه از نقشه</span>'
   }[s] || '');
   U.statusBadge = s => {
     const m = { 'در حال اجرا': 'b-ok', 'مطالعات': 'b-in', 'شروع نشده': 'b-mu', 'در انتظار تامین اعتبار': 'b-wa', 'در برنامه': 'b-pr', 'ثبت شده': 'b-ok', 'تایید شده': 'b-ok', 'در انتظار بازبینی': 'b-wa', 'نیاز به اصلاح': 'b-er', 'ناقص': 'b-wa', 'پیش‌نویس': 'b-mu', 'فعال': 'b-ok', 'غیرفعال': 'b-mu', 'تکمیل': 'b-ok' }[s] || 'b-mu';
@@ -108,11 +108,59 @@
   };
   U.hl = (text, q) => {
     const t = U.esc(text);
-    if (!q) return t;
-    const i = U.norm(text).indexOf(U.norm(q));
+    const nq = U.norm(q);
+    if (!nq) return t;
+    const raw = String(text == null ? '' : text);
+    const lead = raw.length - raw.replace(/^\s+/, '').length;
+    const i = U.norm(raw).indexOf(nq);
     if (i < 0) return t;
-    const raw = String(text);
-    return U.esc(raw.slice(0, i)) + '<mark>' + U.esc(raw.slice(i, i + q.length)) + '</mark>' + U.esc(raw.slice(i + q.length));
+    const a = i + lead, b = a + nq.length;
+    return U.esc(raw.slice(0, a)) + '<mark>' + U.esc(raw.slice(a, b)) + '</mark>' + U.esc(raw.slice(b));
+  };
+
+  /* ---------- info tips: hover / focus shows, click pins (one shared floating element) ---------- */
+  U.tips = [];
+  U.info = (html, cls) => { let n = U.tips.indexOf(html); if (n < 0) n = U.tips.push(html) - 1; return `<button type="button" class="inf ${cls || ''}" data-ti="${n}" aria-label="توضیح">${U.ic('info', 'xs')}</button>`; };
+  const tipEl = document.createElement('div'); tipEl.className = 'tipx'; tipEl.setAttribute('role', 'tooltip'); document.body.appendChild(tipEl);
+  let pinned = null;
+  const tipHtml = el => el.dataset.ti != null ? U.tips[+el.dataset.ti] : U.esc(el.dataset.tt || '');
+  function showTip(el) {
+    tipEl.innerHTML = tipHtml(el); tipEl.classList.add('on');
+    const r = el.getBoundingClientRect(), w = tipEl.offsetWidth, h = tipEl.offsetHeight;
+    let x = r.left + r.width / 2 - w / 2; x = Math.max(8, Math.min(window.innerWidth - w - 8, x));
+    let y = r.bottom + 8; if (y + h > window.innerHeight - 8) y = Math.max(8, r.top - h - 8);
+    tipEl.style.left = x + 'px'; tipEl.style.top = y + 'px';
+  }
+  function hideTip() { tipEl.classList.remove('on'); if (pinned) { pinned.classList.remove('pin'); pinned = null; } }
+  U.hideTip = hideTip;
+  document.addEventListener('mouseover', e => { if (pinned) return; const el = e.target.closest('.inf,[data-tt]'); if (el) showTip(el); });
+  document.addEventListener('mouseout', e => { if (pinned) return; const el = e.target.closest('.inf,[data-tt]'); if (el && !el.contains(e.relatedTarget)) tipEl.classList.remove('on'); });
+  document.addEventListener('focusin', e => { const el = e.target.closest && e.target.closest('.inf'); if (el && !pinned) showTip(el); });
+  document.addEventListener('focusout', e => { if (!pinned && e.target.closest && e.target.closest('.inf')) tipEl.classList.remove('on'); });
+  document.addEventListener('click', e => {
+    const el = e.target.closest('.inf');
+    if (el) { e.preventDefault(); e.stopPropagation(); if (pinned === el) { hideTip(); return; } hideTip(); pinned = el; el.classList.add('pin'); showTip(el); return; }
+    if (pinned) hideTip();
+  }, true);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') hideTip(); });
+  document.addEventListener('scroll', () => { if (tipEl.classList.contains('on')) hideTip(); }, true);
+
+  /* ---------- modal ---------- */
+  U.modal = o => {
+    let m = U.$('.modal'); if (!m) { m = document.createElement('div'); m.className = 'modal'; document.body.appendChild(m); }
+    m.innerHTML = `<div class="mbox ${o.wide ? 'wide' : ''}" role="dialog" aria-modal="true" aria-label="${U.esc(o.title)}"><div class="mh"><b>${o.title}</b><button class="ib" data-mx aria-label="بستن" style="margin-inline-start:auto">${U.ic('x', 's')}</button></div><div class="mb">${o.body}</div>${o.ok === false ? '' : `<div class="mf"><button class="btn ${o.danger ? 'dg' : 'pr'}" data-mok>${o.ok || 'ذخیره'}</button><button class="btn" data-mx>${o.cancel || 'انصراف'}</button></div>`}</div>`;
+    m.classList.add('on');
+    const box = m.querySelector('.mbox');
+    const esc = e => { if (e.key === 'Escape') close(); };
+    function close() { m.classList.remove('on'); document.removeEventListener('keydown', esc); if (o.onClose) o.onClose(); }
+    document.addEventListener('keydown', esc);
+    m.onclick = e => {
+      if (e.target === m || e.target.closest('[data-mx]')) { close(); return; }
+      if (e.target.closest('[data-mok]')) { const r = o.onOk ? o.onOk(box) : undefined; if (r !== false) close(); }
+    };
+    if (o.onOpen) o.onOpen(box, close);
+    setTimeout(() => { const f = box.querySelector('input:not([type=checkbox]):not([type=file]),textarea,select'); if (f) f.focus(); }, 40);
+    return close;
   };
 
   /* Generic table: cols [{k, t, w, sort:fn|true, render:(row,q)=>html, num}], rows, el.
